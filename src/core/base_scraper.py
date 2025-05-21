@@ -13,7 +13,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
 class BaseScraper(ABC):
-    """Abstract base class for all store scrapers."""
     
     def __init__(self, name: str, config: Dict[str, Any]):
 
@@ -23,6 +22,9 @@ class BaseScraper(ABC):
         self.driver = None
         self.results = {}  
         self.categories = self._initialize_categories(config.get('categories', {}))
+        self.batch_size = None
+        self.report = {}
+        
     
     def _initialize_categories(self, categories_config: Dict[str, Any]) -> List[Category]:
         categories = []
@@ -45,6 +47,7 @@ class BaseScraper(ABC):
             headless = self.config.get('headless', True)
             user_agent = self.config.get('user_agent')
             window_size = self.config.get('window_size', "1920,1080")
+            self.batch_size = self.config.get('batch_size', 4)
             
             self.driver = WebDriverFactory.create_chrome_driver(
                 headless=headless,
@@ -94,7 +97,6 @@ class BaseScraper(ABC):
         if category_name and category_name in self.results:
             results_to_save = self.results[category_name]
         elif not category_name:
-            # Flatten all results if no specific category
             results_to_save = []
             for cat_results in self.results.values():
                 results_to_save.extend(cat_results)
@@ -110,11 +112,18 @@ class BaseScraper(ABC):
             os.makedirs('data')
         
         base_filename = f"{self.name}_{category_name if category_name else 'all'}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        
+        os.makedirs('data', exist_ok=True)
+        os.makedirs(f"data/{category_name}", exist_ok=True)
         if not filename:
-            filename = f"data/{base_filename}"
+            if category_name:
+                filename = f"data/{category_name}/{base_filename}"
+            else:
+                filename = f"data/{base_filename}"
         elif not filename.startswith('data/'):
-            filename = f"data/{filename}"
+            if category_name:
+                filename = f"data/{category_name}/{base_filename}"
+            else:
+                filename = f"data/{base_filename}"
         
         try:
             if format.lower() == 'csv':
@@ -140,27 +149,40 @@ class BaseScraper(ABC):
         try:
             self.setup()
             self.logger.info(f"Starting {self.name} scraper")
-            
+
+            process_report ={}
             for category in self.categories:
                 self.logger.info(f"Processing category: {category.name}")
                 
                 self.results[category.name] = []
-                
                 self.navigate_to_category(category)
                 
                 product_urls = self.extract_product_urls(category)
+            
+
+
                 self.logger.info(f"Found {len(product_urls)} product URLs in category {category.name}")
-                
+                if len(product_urls) > self.batch_size:
+                    self.logger.info(f"Limiting to the first {self.batch_size} products")
+                    product_urls = product_urls[:self.batch_size]
+                product_count =  len(product_urls)
+                processed_count = 0
                 for idx, (product_name, product_url) in enumerate(product_urls):
                     self.logger.info(f"Processing product {idx+1}/{len(product_urls)}: {product_name}")
                     product_data = self.process_product(product_url, category)
-                    
                     if product_data:
                         product_data['name'] = product_name
                         product_data['url'] = product_url
                         product_data['category'] = category.name
+                        product_data['timestamp'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        processed_count += 1
                         self.results[category.name].append(product_data)
-            
+                process_report[category.name] = {
+                    'total_products': product_count,
+                    'processed_products': processed_count,
+                    'success_rate': (processed_count / product_count) * 100 if product_count > 0 else 0
+                }
+            self.report = process_report
             self.logger.info(f"Scraping completed. Found items in {len(self.results)} categories.")
             return self.results
         except Exception as e:
@@ -168,6 +190,9 @@ class BaseScraper(ABC):
             return {}
         finally:
             self.teardown()
+    
+    def get_report(self) -> Dict[str, Any]:
+        return self.report
     
     @abstractmethod
     def navigate_to_category(self, category: Category) -> None:

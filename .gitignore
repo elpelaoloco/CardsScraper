@@ -9,3 +9,9 @@ logs/**
 # Ignore screenshot folder and all its contents
 screenshots/
 screenshots/**
+
+data/
+data/**
+
+reports/
+reports/**
