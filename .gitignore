@@ -1,0 +1,11 @@
+# Ignore Python cache files and folders
+__pycache__/
+**/__pycache__/
+
+# Ignore logs folder and all its contents
+logs/
+logs/**
+
+# Ignore screenshot folder and all its contents
+screenshots/
+screenshots/**

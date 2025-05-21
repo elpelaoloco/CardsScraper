@@ -1,0 +1,10 @@
+[
+    {
+        "store_name": "Guild Dreams",
+        "cards_urls": [
+            {"yugiho": "https://www.guildreams.com/collection/yu-gi-oh?order=id&way=DESC&limit=130&page=1"},
+            {"pokemon": "https://www.guildreams.com/collection/pokemon?order=id&way=DESC&limit=167&page=1"},
+            {"magic": "https://www.guildreams.com/collection/magic-the-gathering?order=id&way=DESC&limit=106&page=1"}
+        ]
+    }
+]
