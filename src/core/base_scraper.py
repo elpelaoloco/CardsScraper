@@ -13,7 +13,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
 class BaseScraper(ABC):
-    """Abstract base class for all store scrapers."""
     
     def __init__(self, name: str, config: Dict[str, Any]):
 
@@ -23,6 +22,7 @@ class BaseScraper(ABC):
         self.driver = None
         self.results = {}  
         self.categories = self._initialize_categories(config.get('categories', {}))
+        self.batch_size = None
     
     def _initialize_categories(self, categories_config: Dict[str, Any]) -> List[Category]:
         categories = []
@@ -45,6 +45,7 @@ class BaseScraper(ABC):
             headless = self.config.get('headless', True)
             user_agent = self.config.get('user_agent')
             window_size = self.config.get('window_size', "1920,1080")
+            self.batch_size = self.config.get('batch_size', 10)
             
             self.driver = WebDriverFactory.create_chrome_driver(
                 headless=headless,
@@ -94,7 +95,6 @@ class BaseScraper(ABC):
         if category_name and category_name in self.results:
             results_to_save = self.results[category_name]
         elif not category_name:
-            # Flatten all results if no specific category
             results_to_save = []
             for cat_results in self.results.values():
                 results_to_save.extend(cat_results)
@@ -150,6 +150,9 @@ class BaseScraper(ABC):
                 
                 product_urls = self.extract_product_urls(category)
                 self.logger.info(f"Found {len(product_urls)} product URLs in category {category.name}")
+                if len(product_urls) > self.batch_size:
+                    self.logger.info(f"Limiting to the first {self.batch_size} products")
+                    product_urls = product_urls[:self.batch_size]
                 
                 for idx, (product_name, product_url) in enumerate(product_urls):
                     self.logger.info(f"Processing product {idx+1}/{len(product_urls)}: {product_name}")

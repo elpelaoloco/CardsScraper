@@ -1,9 +1,5 @@
 import os
-import logging
-import datetime
-from typing import Optional
 import json
-import yaml
 from src.core.scraper_manager import ScraperManager
 from src.core.logger_factory import LoggerFactory
 def create_example_config() -> None:
@@ -13,6 +9,7 @@ def create_example_config() -> None:
                 'type': 'guild_dreams',
                 'headless': True,
                 'page_load_delay': 3,
+                'batch_size': 10,
                 'categories': {
                     'magic': {
                         'url': 'https://www.guildreams.com/collection/magic-the-gathering?order=id&way=DESC&limit=106&page=1',
