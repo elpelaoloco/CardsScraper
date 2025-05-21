@@ -1,4 +1,5 @@
 import time
+import re
 from typing import List, Tuple, Dict, Any
 from src.core.base_scraper import BaseScraper
 from src.core.category import Category
@@ -49,7 +50,15 @@ class GuildDreamsScraper(BaseScraper):
         price_selector = category.selectors.get('price_selector')
         if price_selector:
             price_element = self.driver.find_element(By.XPATH, price_selector)
-            data['price'] = price_element.text.strip()
+            price_text= price_element.text.strip()
+            pattern = r'\b\d+(?:\.\d+)?\b'
+            match = re.search(pattern, price_text)
+            if match:
+                data['price'] = match.group()
+            else:
+                self.logger.warning(f"Price not found in text: {price_text}")
+                data['price'] = price_text
+
         
 
         stock_selector = category.selectors.get('stock_selector')

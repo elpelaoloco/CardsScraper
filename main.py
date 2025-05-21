@@ -9,7 +9,7 @@ def create_example_config() -> None:
                 'type': 'guild_dreams',
                 'headless': True,
                 'page_load_delay': 3,
-                'batch_size': 10,
+                'batch_size': 3,
                 'categories': {
                     'magic': {
                         'url': 'https://www.guildreams.com/collection/magic-the-gathering?order=id&way=DESC&limit=106&page=1',

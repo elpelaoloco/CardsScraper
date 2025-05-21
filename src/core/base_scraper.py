@@ -45,7 +45,7 @@ class BaseScraper(ABC):
             headless = self.config.get('headless', True)
             user_agent = self.config.get('user_agent')
             window_size = self.config.get('window_size', "1920,1080")
-            self.batch_size = self.config.get('batch_size', 10)
+            self.batch_size = self.config.get('batch_size', 4)
             
             self.driver = WebDriverFactory.create_chrome_driver(
                 headless=headless,
@@ -110,11 +110,20 @@ class BaseScraper(ABC):
             os.makedirs('data')
         
         base_filename = f"{self.name}_{category_name if category_name else 'all'}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        
+
+
+        os.makedirs('data', exist_ok=True)
+        os.makedirs(f"data/{category_name}", exist_ok=True)
         if not filename:
-            filename = f"data/{base_filename}"
+            if category_name:
+                filename = f"data/{category_name}/{base_filename}"
+            else:
+                filename = f"data/{base_filename}"
         elif not filename.startswith('data/'):
-            filename = f"data/{filename}"
+            if category_name:
+                filename = f"data/{category_name}/{base_filename}"
+            else:
+                filename = f"data/{base_filename}"
         
         try:
             if format.lower() == 'csv':
