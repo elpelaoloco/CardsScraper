@@ -4,8 +4,12 @@ from typing import List, Tuple, Dict, Any
 from src.core.base_scraper import BaseScraper
 from src.core.category import Category
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
-class GuildDreamsScraper(BaseScraper):
+
+class HunterCardTCG(BaseScraper):
     def navigate_to_category(self,category: Category) -> None:
 
         self.logger.info(f"Navigating to {category.url}")
@@ -72,13 +76,17 @@ class GuildDreamsScraper(BaseScraper):
             data['description'] = description_element.text.strip()
 
         language_selector = category.selectors.get('language_selector')
+        language_element = self.driver.find_element(By.XPATH, language_selector)
+
         if language_selector:
-            pattern = r"Idioma:\s*([^\n\.]+)\."
-            match = re.search(pattern, description_element.text)
+            pattern = r"[–-]\s*([^\s\n]+)"
+            matches = re.findall(pattern, language_element.text)
             if match:
-                data['language'] = match.group(1)
+                data['language'] = matches[-1]
             else:
-                self.logger.warning(f"Language not found in text: {description_element.text}")
+                self.self.logger.warning(f"Language not found in text: {description_element.text}")
                 data['language'] = 'unknown'
         
         return data
+    
+   

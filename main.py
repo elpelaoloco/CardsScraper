@@ -5,47 +5,49 @@ from src.core.logger_factory import LoggerFactory
 def create_example_config() -> None:
     config = {
         'scrapers': {
-            'guild_dreams': {
-                'type': 'guild_dreams',
-                'headless': True,
-                'page_load_delay': 3,
-                'batch_size': 3,
-                'categories': {
-                    'magic': {
-                        'url': 'https://www.guildreams.com/collection/magic-the-gathering?order=id&way=DESC&limit=106&page=1',
-                        'selectors': {
-                            'product_selector': '//div[@class="row"]//div[@class="bs-product"]',
-                            'urls_selector': '//div[@class="row"]//div[@class="bs-product"]//div[@class="bs-product-info"]//a',
-                            'price_selector': '//div[@data-bs="product.completePrice"]//div[@class="h5"] | //div[@data-bs="product.completePrice"]//span[@data-bs="product.finalPrice"] | //div[contains(., "Ahora")]/span[@class="h2"]',
-                            'stock_selector': '//div[@data-bs="product.stock"]',
-                            'description_selector': '//section[@id="bs-product-description"]',
-                            'title_selector': '//article/h2',
-                        }
-                    },
-                    "yugioh":{
-                        'url': 'https://www.guildreams.com/collection/yu-gi-oh?order=id&way=DESC&limit=130&page=1',
-                        'selectors': {
-                            'product_selector': '//div[@class="row"]//div[@class="bs-product"]',
-                            'urls_selector': '//div[@class="row"]//div[@class="bs-product"]//div[@class="bs-product-info"]//a',
-                            'price_selector': '//div[@data-bs="product.completePrice"]//div[@class="h5"] | //div[@data-bs="product.completePrice"]//span[@data-bs="product.finalPrice"] | //div[contains(., "Ahora")]/span[@class="h2"]',
-                            'stock_selector': '//div[@data-bs="product.stock"]',
-                            'description_selector': '//section[@id="bs-product-description"]',
-                            'title_selector': '//article/h2',
-                        }
-                    },
-                    "pokemon":{
-                        'url': 'https://www.guildreams.com/collection/pokemon?order=id&way=DESC&limit=167&page=1',
-                        'selectors': {
-                            'product_selector': '//div[@class="row"]//div[@class="bs-product"]',
-                            'urls_selector': '//div[@class="row"]//div[@class="bs-product"]//div[@class="bs-product-info"]//a',
-                            'price_selector': '//div[@data-bs="product.completePrice"]//div[@class="h5"] | //div[@data-bs="product.completePrice"]//span[@data-bs="product.finalPrice"] | //div[contains(., "Ahora")]/span[@class="h2"]',
-                            'stock_selector': '//div[@data-bs="product.stock"]',
-                            'description_selector': '//section[@id="bs-product-description"]',
-                            'title_selector': '//article/h2',
-                            }
+         'thirdimpact': {
+            'type': 'thirdimpact',
+            'headless': True,
+            'page_load_delay': 2,
+            'categories': {
+                'pokemon': {
+                    'url': 'https://www.thirdimpact.cl/collection/pokemon',
+                    'selectors': {
+                        'product_selector':  "//section[contains(@class, 'grid-item')]",
+                        'urls_selector': ".//a[contains(@class, 'product-grid-item__title')]",
+                        'price_selector': ".//div[contains(@class, 'bs-product__final-price')]",
+                        'stock_selector': ".//p[contains(text(), 'Agotado')]",
+                        'description_selector': "//section[@class='bs-product-description']",
+                        'title_selector': "",
+                        'language_selector': "//div[@id='bs-product-form' and contains(@class, 'form')]//input"
+                    
+                    }
+                },
+                'yugioh': {
+                    'url': 'https://www.thirdimpact.cl/collection/yu-gi-oh',
+                    'selectors': {
+                        'product_selector': "//section[contains(@class, 'grid-item')]",
+                        'urls_selector': ".//a[@class='bs-collection__product-info']",
+                        'price_selector': ".//div[contains(@class, 'price')]//span[contains(@class, 'money')]",
+                        'stock_selector': ".//p[contains(text(), 'Agotado')]",
+                        'description_selector': "//div[contains(@class, 'product-single__description')]",
+                        'title_selector': "//h1[contains(@class, 'product-single__title')]"
+
+                    }
+                },
+                'magic': {
+                    'url': 'https://www.thirdimpact.cl/collection/magic-the-gathering',
+                    'selectors': {
+                        'product_selector': "//div[contains(@class, 'product-grid-item')]",
+                        'urls_selector': ".//a[contains(@class, 'product-grid-item__title')]",
+                        'price_selector': ".//div[contains(@class, 'price')]//span[contains(@class, 'money')]",
+                        'stock_selector': ".//p[contains(text(), 'Agotado')]",
+                        'description_selector': "//div[contains(@class, 'product-single__description')]",
+                        'title_selector': "//h1[contains(@class, 'product-single__title')]"
                     }
                 }
             }
+        }
         }
     }
     
@@ -70,6 +72,7 @@ def main() -> None:
     try:
         manager = ScraperManager('configs/scrapers_config.json')
         results = manager.run_all()
+        manager.make_report()
         logger.info(f"Scraping completed. Results: {results.keys()}")
     except Exception as e:
         logger.error(f"Error in main function: {e}", exc_info=True)

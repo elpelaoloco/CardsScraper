@@ -14,7 +14,6 @@ class HackerNewsScraper(BaseScraper):
         self.logger.info(f"Navigating to {category.url}")
         self.driver.get(category.url)
         
-        # Wait for page to load
         time.sleep(self.config.get('page_load_delay', 2))
     
     def extract_product_urls(self, category: Category) -> List[Tuple[str, str]]:
@@ -25,10 +24,10 @@ class HackerNewsScraper(BaseScraper):
             self.logger.error(f"Couldn't find title elements for category {category.name}")
             return []
         
-        # Take screenshot for verification
+
         self.take_screenshot(f"{self.name}_{category.name}_listing.png")
         
-        # Extract titles and URLs
+
         elements = self.driver.find_elements(By.CSS_SELECTOR, title_selector)
         self.logger.info(f"Found {len(elements)} title elements")
         

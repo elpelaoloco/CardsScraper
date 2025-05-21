@@ -1,42 +1,77 @@
 {
     "scrapers": {
-        "guild_dreams": {
-            "type": "guild_dreams",
+        "thirdimpact": {
+            "type": "thirdimpact",
             "headless": true,
-            "page_load_delay": 3,
+            "page_load_delay": 2,
             "batch_size": 3,
             "categories": {
-                "magic": {
-                    "url": "https://www.guildreams.com/collection/magic-the-gathering?order=id&way=DESC&limit=106&page=1",
+                "pokemon": {
+                    "url": "https://www.thirdimpact.cl/collection/pokemon-trading-card-game",
                     "selectors": {
-                        "product_selector": "//div[@class=\"row\"]//div[@class=\"bs-product\"]",
-                        "urls_selector": "//div[@class=\"row\"]//div[@class=\"bs-product\"]//div[@class=\"bs-product-info\"]//a",
-                        "price_selector": "//div[@data-bs=\"product.completePrice\"]//div[@class=\"h5\"] | //div[@data-bs=\"product.completePrice\"]//span[@data-bs=\"product.finalPrice\"] | //div[contains(., \"Ahora\")]/span[@class=\"h2\"]",
-                        "stock_selector": "//div[@data-bs=\"product.stock\"]",
-                        "description_selector": "//section[@id=\"bs-product-description\"]",
-                        "title_selector": "//article/h2"
+                        "product_selector": "//section[contains(@class, 'grid__item')]",
+                        "urls_selector": ".//a[contains(@class, 'bs-collection__product-info')]",
+                        "price_selector": ".//span[contains(@class, 'bs-product__final-price')]",
+                        "stock_selector": ".//p[contains(text(), 'Agotado')]",
+                        "description_selector": "//section[@class='bs-product-description']",
+                        "title_selector": "",
+                        "language_selector": "//div[@id='bs-product-form' and contains(@class, 'form')]//label"
+                    }
+                },
+                "magic": {
+                    "url": "https://www.thirdimpact.cl/collection/magic-the-gathering",
+                    "selectors": {
+                        "product_selector": "//section[contains(@class, 'grid__item')]",
+                        "urls_selector": ".//a[contains(@class, 'bs-collection__product-info')]",
+                        "price_selector": ".//span[contains(@class, 'bs-product__final-price')]",
+                        "stock_selector": ".//p[contains(text(), 'Agotado')]",
+                        "description_selector": "//section[@class='bs-product-description']",
+                        "title_selector": "",
+                        "language_selector": "//div[@id='bs-product-form' and contains(@class, 'form')]//label"
+                    }
+                }
+            }
+        },
+        "card_universe": {
+            "type": "card_universe",
+            "headless": true,
+            "page_load_delay": 2,
+            "batch_size": 3,
+            "categories": {
+                "pokemon": {
+                    "url": "https://carduniverse.cl/collections/pokemon-tcg",
+                    "selectors": {
+                        "product_selector": "//div[contains(@class, 'product-grid')]",
+                        "urls_selector": "//a[@class='prod-th']",
+                        "price_selector": "//div[contains(@class, 'price')]//span[contains(@class, 'money')]",
+                        "stock_selector": "//p[contains(text(), 'Agotado')]",
+                        "description_selector": "//blockquote//ul[1]|//div[contains(@class, 'product-description')]",
+                        "title_selector": "//a[@class='prod-th']/span[@class='product-title']/span[@class='title']",
+                        "language_selector": "//select[@data-name='Idioma']/option"
                     }
                 },
                 "yugioh": {
-                    "url": "https://www.guildreams.com/collection/yu-gi-oh?order=id&way=DESC&limit=130&page=1",
+                    "url": "https://carduniverse.cl/collections/yu-gi-oh",
                     "selectors": {
-                        "product_selector": "//div[@class=\"row\"]//div[@class=\"bs-product\"]",
-                        "urls_selector": "//div[@class=\"row\"]//div[@class=\"bs-product\"]//div[@class=\"bs-product-info\"]//a",
-                        "price_selector": "//div[@data-bs=\"product.completePrice\"]//div[@class=\"h5\"] | //div[@data-bs=\"product.completePrice\"]//span[@data-bs=\"product.finalPrice\"] | //div[contains(., \"Ahora\")]/span[@class=\"h2\"]",
-                        "stock_selector": "//div[@data-bs=\"product.stock\"]",
-                        "description_selector": "//section[@id=\"bs-product-description\"]",
-                        "title_selector": "//article/h2"
+                        "product_selector": "//div[contains(@class, 'product-grid')]",
+                        "urls_selector": "//a[@class='prod-th']",
+                        "price_selector": "//div[contains(@class, 'price')]//span[contains(@class, 'money')]",
+                        "stock_selector": "//p[contains(text(), 'Agotado')]",
+                        "description_selector": "//blockquote//ul[1]|//div[contains(@class, 'product-description')]",
+                        "title_selector": "//a[@class='prod-th']/span[@class='product-title']/span[@class='title']",
+                        "language_selector": "//select[@data-name='Idioma']/option"
                     }
                 },
-                "pokemon": {
-                    "url": "https://www.guildreams.com/collection/pokemon?order=id&way=DESC&limit=167&page=1",
+                "magic": {
+                    "url": "https://carduniverse.cl/collections/magic-the-gathering",
                     "selectors": {
-                        "product_selector": "//div[@class=\"row\"]//div[@class=\"bs-product\"]",
-                        "urls_selector": "//div[@class=\"row\"]//div[@class=\"bs-product\"]//div[@class=\"bs-product-info\"]//a",
-                        "price_selector": "//div[@data-bs=\"product.completePrice\"]//div[@class=\"h5\"] | //div[@data-bs=\"product.completePrice\"]//span[@data-bs=\"product.finalPrice\"] | //div[contains(., \"Ahora\")]/span[@class=\"h2\"]",
-                        "stock_selector": "//div[@data-bs=\"product.stock\"]",
-                        "description_selector": "//section[@id=\"bs-product-description\"]",
-                        "title_selector": "//article/h2"
+                        "product_selector": "//div[contains(@class, 'product-grid')]",
+                        "urls_selector": "//a[@class='prod-th']",
+                        "price_selector": "//div[contains(@class, 'price')]//span[contains(@class, 'money')]",
+                        "stock_selector": "//p[contains(text(), 'Agotado')]",
+                        "description_selector": "//blockquote//ul[1]|//div[contains(@class, 'product-description')]",
+                        "title_selector": "//a[@class='prod-th']/span[@class='product-title']/span[@class='title']",
+                        "language_selector": "//select[@data-name='Idioma']/option"
                     }
                 }
             }

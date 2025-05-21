@@ -23,6 +23,8 @@ class BaseScraper(ABC):
         self.results = {}  
         self.categories = self._initialize_categories(config.get('categories', {}))
         self.batch_size = None
+        self.report = {}
+        
     
     def _initialize_categories(self, categories_config: Dict[str, Any]) -> List[Category]:
         categories = []
@@ -110,8 +112,6 @@ class BaseScraper(ABC):
             os.makedirs('data')
         
         base_filename = f"{self.name}_{category_name if category_name else 'all'}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
-
-
         os.makedirs('data', exist_ok=True)
         os.makedirs(f"data/{category_name}", exist_ok=True)
         if not filename:
@@ -149,30 +149,40 @@ class BaseScraper(ABC):
         try:
             self.setup()
             self.logger.info(f"Starting {self.name} scraper")
-            
+
+            process_report ={}
             for category in self.categories:
                 self.logger.info(f"Processing category: {category.name}")
                 
                 self.results[category.name] = []
-                
                 self.navigate_to_category(category)
                 
                 product_urls = self.extract_product_urls(category)
+            
+
+
                 self.logger.info(f"Found {len(product_urls)} product URLs in category {category.name}")
                 if len(product_urls) > self.batch_size:
                     self.logger.info(f"Limiting to the first {self.batch_size} products")
                     product_urls = product_urls[:self.batch_size]
-                
+                product_count =  len(product_urls)
+                processed_count = 0
                 for idx, (product_name, product_url) in enumerate(product_urls):
                     self.logger.info(f"Processing product {idx+1}/{len(product_urls)}: {product_name}")
                     product_data = self.process_product(product_url, category)
-                    
                     if product_data:
                         product_data['name'] = product_name
                         product_data['url'] = product_url
                         product_data['category'] = category.name
+                        product_data['timestamp'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        processed_count += 1
                         self.results[category.name].append(product_data)
-            
+                process_report[category.name] = {
+                    'total_products': product_count,
+                    'processed_products': processed_count,
+                    'success_rate': (processed_count / product_count) * 100 if product_count > 0 else 0
+                }
+            self.report = process_report
             self.logger.info(f"Scraping completed. Found items in {len(self.results)} categories.")
             return self.results
         except Exception as e:
@@ -180,6 +190,9 @@ class BaseScraper(ABC):
             return {}
         finally:
             self.teardown()
+    
+    def get_report(self) -> Dict[str, Any]:
+        return self.report
     
     @abstractmethod
     def navigate_to_category(self, category: Category) -> None:

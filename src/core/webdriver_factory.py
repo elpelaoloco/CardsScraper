@@ -12,8 +12,8 @@ class WebDriverFactory:
         prefs = {
             'profile.managed_default_content_settings.images': 2,  # 2 = block images
             'profile.default_content_setting_values.notifications': 2,  # 2 = block notifications
-            'profile.managed_default_content_settings.stylesheets': 2,  # Opcional: deshabilitar CSS
-            'profile.managed_default_content_settings.cookies': 2,  # Opcional: bloquear cookies
+            #'profile.managed_default_content_settings.stylesheets': 2,  # Opcional: deshabilitar CSS
+            #'profile.managed_default_content_settings.cookies': 2,  # Opcional: bloquear cookies
             'profile.managed_default_content_settings.geolocation': 2,  # Bloquear solicitudes de geolocalización
             'profile.managed_default_content_settings.media_stream': 2,  # Bloquear cámara/micrófono
         }

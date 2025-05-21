@@ -5,7 +5,7 @@ from src.core.base_scraper import BaseScraper
 from src.core.category import Category
 from selenium.webdriver.common.by import By
 
-class GuildDreamsScraper(BaseScraper):
+class CardUniverseScraper(BaseScraper):
     def navigate_to_category(self,category: Category) -> None:
 
         self.logger.info(f"Navigating to {category.url}")
@@ -28,10 +28,11 @@ class GuildDreamsScraper(BaseScraper):
         for element in elements:
             try:
                 title = element.text.strip()
+                title_name = title.split('\n')[0]
                 url = element.get_attribute('href')
                 
-                if title and url:
-                    product_urls.append((title, url))
+                if title_name and url:
+                    product_urls.append((title_name, url))
             except Exception as e:
                 self.logger.warning(f"Error extracting element data: {e}")
         
@@ -59,26 +60,22 @@ class GuildDreamsScraper(BaseScraper):
                 self.logger.warning(f"Price not found in text: {price_text}")
                 data['price'] = price_text
 
-        
+        language_selector = category.selectors.get('language_selector')
+        if language_selector:
+            languages = []
+            for option in self.driver.find_elements(By.XPATH, language_selector):
+                languages.append(option.text.strip())
+            data['language'] = ', '.join(languages)
+                
 
-        stock_selector = category.selectors.get('stock_selector')
-        if stock_selector:
-            stock_element = self.driver.find_element(By.XPATH, stock_selector)
-            data['stock'] = stock_element.text.strip()
+        #stock_selector = category.selectors.get('stock_selector')
+        #if stock_selector:
+            #stock_element = self.driver.find_element(By.XPATH, stock_selector)
+        data['stock'] = 'unknown'
         
         description_selector = category.selectors.get('description_selector')
         if description_selector:
             description_element = self.driver.find_element(By.XPATH, description_selector)
             data['description'] = description_element.text.strip()
-
-        language_selector = category.selectors.get('language_selector')
-        if language_selector:
-            pattern = r"Idioma:\s*([^\n\.]+)\."
-            match = re.search(pattern, description_element.text)
-            if match:
-                data['language'] = match.group(1)
-            else:
-                self.logger.warning(f"Language not found in text: {description_element.text}")
-                data['language'] = 'unknown'
         
         return data
