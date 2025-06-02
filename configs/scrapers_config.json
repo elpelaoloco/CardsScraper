@@ -76,5 +76,19 @@
                 }
             }
         }
-    }
+    },
+    "la_comarca": {
+        "type": "lacomarca",
+        "headless": true,
+        "page_load_delay": 2,
+        "categories": {
+            "pokemon_singles": {
+            "url": "https://www.tiendalacomarca.cl/collections/pokemon-singles",
+            "selectors": {
+                "urls_selector": "//a[contains(@class,'product-title')]",
+                "price_selector": "//span[contains(@class,'price-item--regular')]"
+            }
+            }
+        }
+        }
 }
