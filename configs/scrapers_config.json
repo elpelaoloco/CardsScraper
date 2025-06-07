@@ -116,6 +116,30 @@
             "title_selector": ".//div[contains(@class, 'product-title')]",
             "language_selector": "//select[@data-name='Idioma']/option"
           }
+        },
+        "pokemon_singles_full": {
+          "url": "https://www.tiendalacomarca.cl/collections/pokemon-singles",
+          "selectors": {
+            "product_selector": "//li[contains(@class, 'grid__item')]",
+            "urls_selector": ".//a[contains(@href, '/products/')]",
+            "price_selector": ".//span[contains(@class,'product-price__price')]",
+            "stock_selector": ".//p[contains(text(), 'Agotado')]",
+            "description_selector": "//div[contains(@class, 'product-description')]",
+            "title_selector": ".//div[contains(@class, 'product-title')]",
+            "language_selector": "//select[@data-name='Idioma']/option"
+          }
+        },
+        "magic_singles": {
+          "url": "https://www.tiendalacomarca.cl/collections/mtg-singles",
+          "selectors": {
+            "product_selector": "//li[contains(@class, 'grid__item')]",
+            "urls_selector": ".//a[contains(@href, '/products/')]",
+            "price_selector": ".//span[contains(@class,'product-price__price')]",
+            "stock_selector": ".//p[contains(text(), 'Agotado')]",
+            "description_selector": "//div[contains(@class, 'product-description')]",
+            "title_selector": ".//div[contains(@class, 'product-title')]",
+            "language_selector": "//select[@data-name='Idioma']/option"
+          }
         }
       }
     },
