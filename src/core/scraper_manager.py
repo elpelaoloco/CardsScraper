@@ -70,7 +70,7 @@ class ScraperManager:
             with open(file_path, "w", encoding="utf-8") as f:
                 json.dump(entries, f, indent=2, ensure_ascii=False)
 
-            self.logger.info(f"Saved results for {scraper_name} → {category_name} at {file_path}")
+            self.logger.info(f"Saved results for {scraper_name} {category_name} at {file_path}")
 
     def run_scraper(self, name: str) -> Dict[str, List[Dict[str, Any]]]:
         if name not in self.scrapers:

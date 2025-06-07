@@ -117,7 +117,7 @@
             "language_selector": "//select[@data-name='Idioma']/option"
           }
         },
-        "pokemon_singles_full": {
+        "pokemon": {
           "url": "https://www.tiendalacomarca.cl/collections/pokemon-singles",
           "selectors": {
             "product_selector": "//li[contains(@class, 'grid__item')]",
@@ -129,7 +129,7 @@
             "language_selector": "//select[@data-name='Idioma']/option"
           }
         },
-        "magic_singles": {
+        "magic": {
           "url": "https://www.tiendalacomarca.cl/collections/mtg-singles",
           "selectors": {
             "product_selector": "//li[contains(@class, 'grid__item')]",
@@ -147,15 +147,98 @@
       "type": "guild_dreams",
       "headless": true,
       "page_load_delay": 2,
+      "batch_size": 4,
       "categories": {
         "pokemon": {
-          "url": "https://www.guildreams.com/collections/pokemon-singles",
+          "url": "https://www.guildreams.com/collection/pokemon",
           "selectors": {
-            "urls_selector": "//a[contains(@href, '/products/')]",
-            "price_selector": "//div[contains(@class,'product-price')]"
+            "product_selector": "//div[contains(@class, 'bs-product')]",
+            "urls_selector": ".//a[contains(@href, '/product/')]",
+            "price_selector": ".//div[contains(@class, 'bs-product-price')]//div[contains(@class, 'bs-product-final-price')]",
+            "title_selector": ".//h2[contains(@class, 'text-truncate')]"
+          }
+        },
+        "magic": {
+          "url": "https://www.guildreams.com/collection/magic-the-gathering",
+          "selectors": {
+            "product_selector": "//div[contains(@class, 'bs-product')]",
+            "urls_selector": ".//a[contains(@href, '/product/')]",
+            "price_selector": ".//div[contains(@class, 'bs-product-price')]//div[contains(@class, 'bs-product-final-price')]",
+            "title_selector": ".//h2[contains(@class, 'text-truncate')]"
+          }
+        },
+        "yugioh": {
+          "url": "https://www.guildreams.com/collection/yu-gi-oh",
+          "selectors": {
+            "product_selector": "//div[contains(@class, 'bs-product')]",
+            "urls_selector": ".//a[contains(@href, '/product/')]",
+            "price_selector": ".//div[contains(@class, 'bs-product-price')]//div[contains(@class, 'bs-product-final-price')]",
+            "title_selector": ".//h2[contains(@class, 'text-truncate')]"
           }
         }
       }
+    },
+    "hunter_card_tcg": {
+      "type": "hunter_card_tcg",
+      "headless": true,
+      "page_load_delay": 2,
+      "batch_size": 3,
+      "categories": {
+        "pokemon": {
+          "url": "https://www.huntercardtcg.com/categoria-producto/cartas-sueltas/silver-tempest/",
+          "selectors": {
+            "product_selector": "//li[contains(@class, 'product') and contains(@class, 'type-product')]",
+            "urls_selector": ".//a[contains(@href, '/producto/')]",
+            "price_selector": ".//span[contains(@class, 'woocommerce-Price-amount')]",
+            "title_selector": ".//h2"
+          }
+        },
+        "yugioh": {
+          "url": "https://www.huntercardtcg.com/categoria-producto/yugioh/singles-yugioh/rarity-collection-ii/",
+          "selectors": {
+            "product_selector": "//li[contains(@class, 'product') and contains(@class, 'type-product')]",
+            "urls_selector": ".//a[contains(@href, '/producto/')]",
+            "price_selector": ".//span[contains(@class, 'woocommerce-Price-amount')]",
+            "title_selector": ".//h2"
+          }
+        }
+      }
+    },
+    "game_of_magic": {
+  "type": "game_of_magic",
+  "headless": true,
+  "page_load_delay": 2,
+  "batch_size": 4,
+  "categories": {
+    "pokemon": {
+      "url": "https://www.gameofmagictienda.cl/collection/pokemon",
+      "selectors": {
+        "product_selector": "//div[contains(@class, 'bs-collection__product')]",
+        "urls_selector": ".//a[contains(@href, '/product/')]",
+        "price_selector": "//div[contains(@class, 'bs-collection__product-final-price')]",
+        "title_selector": "//h1[contains(@class, 'product-title')]"
+      }
+    },
+    "magic": {
+      "url": "https://www.gameofmagictienda.cl/collection/magic",
+      "selectors": {
+        "product_selector": "//div[contains(@class, 'bs-collection__product')]",
+        "urls_selector": ".//a[contains(@href, '/product/')]",
+        "price_selector": "//div[contains(@class, 'bs-collection__product-final-price')]",
+        "title_selector": "//h1[contains(@class, 'product-title')]"
+      }
+    },
+    "yugioh": {
+      "url": "https://www.gameofmagictienda.cl/collection/yugioh",
+      "selectors": {
+        "product_selector": "//div[contains(@class, 'bs-collection__product')]",
+        "urls_selector": ".//a[contains(@href, '/product/')]",
+        "price_selector": "//div[contains(@class, 'bs-collection__product-final-price')]",
+        "title_selector": "//h1[contains(@class, 'product-title')]"
+      }
     }
+  }
+}
+
   }
 }
