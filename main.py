@@ -43,7 +43,6 @@ def main():
     try:
         results = manager.run_all()
         manager.make_report()
-        consolidate_results(results)
     except Exception as e:
         logger.error(f"Fatal error during scraping execution: {e}", exc_info=True)
 
