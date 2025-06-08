@@ -175,6 +175,7 @@ class BaseScraper(ABC):
                         product_data['url'] = product_url
                         product_data['category'] = category.name
                         product_data['timestamp'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        product_data['store'] = self.name
                         processed_count += 1
                         self.results[category.name].append(product_data)
                 process_report[category.name] = {

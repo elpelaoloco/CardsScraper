@@ -4,6 +4,7 @@ from src.core.base_scraper import BaseScraper
 from src.core.category import Category
 from selenium.webdriver.common.by import By
 import re
+import traceback
 
 class ElReinoScraper(BaseScraper):
     def navigate_to_category(self, category: Category) -> None:
@@ -47,13 +48,41 @@ class ElReinoScraper(BaseScraper):
 
         # Precio con descuento (si lo hay)
         try:
-            price_element = self.driver.find_element(By.XPATH, ".//ins//span[contains(@class, 'woocommerce-Price-amount')]")
-            price_text = price_element.text.strip()
-            price_text = price_text.replace(".", "").replace(",", ".")  # Normalizar
-            match = re.search(r"\d+(?:\.\d+)?", price_text)
-            data["price"] = match.group() if match else price_text
+            alternative_price = self.extract_price()
+            if alternative_price:
+                print(f"Alternative price found: {alternative_price}")
+            data["price"] = alternative_price
         except Exception as e:
+            traceback.print_exc()
             self.logger.warning(f"Price not found: {e}")
             data["price"] = ""
 
         return data
+    
+    def extract_price(self) -> str:
+        price_element = self.driver.find_elements(By.XPATH, "//p[@class='price']/span")
+        if not price_element:
+            self.logger.warning("Price element not found")
+            return ""
+        
+        span_descendants = price_element
+
+        if len(span_descendants) == 1:
+            text = span_descendants[0].get_attribute("innerText")
+            match =re.search(r'[\d.,]+', text)
+            if match:
+                print(f"Matched text: {match}")
+                matched_text = match.group(0)
+                return matched_text
+            else:
+                self.logger.warning("No valid price found in the text")
+                return ""
+        else:
+            for span in span_descendants:
+                if 'actual' in span.get_attribute("innerText").lower():
+                    text = span.get_attribute("innerText")
+                    match =re.search(r'[\d.,]+', text)
+                    if match:
+                        print(f"Matched text: {match}")
+                        matched_text = match.group(0)
+                        return matched_text
