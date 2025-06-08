@@ -1,82 +1,52 @@
-import os
-import json
+import logging
 from src.core.scraper_manager import ScraperManager
-from src.core.logger_factory import LoggerFactory
-def create_example_config() -> None:
-    config = {
-        'scrapers': {
-         'thirdimpact': {
-            'type': 'thirdimpact',
-            'headless': True,
-            'page_load_delay': 2,
-            'categories': {
-                'pokemon': {
-                    'url': 'https://www.thirdimpact.cl/collection/pokemon',
-                    'selectors': {
-                        'product_selector':  "//section[contains(@class, 'grid-item')]",
-                        'urls_selector': ".//a[contains(@class, 'product-grid-item__title')]",
-                        'price_selector': ".//div[contains(@class, 'bs-product__final-price')]",
-                        'stock_selector': ".//p[contains(text(), 'Agotado')]",
-                        'description_selector': "//section[@class='bs-product-description']",
-                        'title_selector': "",
-                        'language_selector': "//div[@id='bs-product-form' and contains(@class, 'form')]//input"
-                    
-                    }
-                },
-                'yugioh': {
-                    'url': 'https://www.thirdimpact.cl/collection/yu-gi-oh',
-                    'selectors': {
-                        'product_selector': "//section[contains(@class, 'grid-item')]",
-                        'urls_selector': ".//a[@class='bs-collection__product-info']",
-                        'price_selector': ".//div[contains(@class, 'price')]//span[contains(@class, 'money')]",
-                        'stock_selector': ".//p[contains(text(), 'Agotado')]",
-                        'description_selector': "//div[contains(@class, 'product-single__description')]",
-                        'title_selector': "//h1[contains(@class, 'product-single__title')]"
+import pandas as pd
+import os
 
-                    }
-                },
-                'magic': {
-                    'url': 'https://www.thirdimpact.cl/collection/magic-the-gathering',
-                    'selectors': {
-                        'product_selector': "//div[contains(@class, 'product-grid-item')]",
-                        'urls_selector': ".//a[contains(@class, 'product-grid-item__title')]",
-                        'price_selector': ".//div[contains(@class, 'price')]//span[contains(@class, 'money')]",
-                        'stock_selector': ".//p[contains(text(), 'Agotado')]",
-                        'description_selector': "//div[contains(@class, 'product-single__description')]",
-                        'title_selector': "//h1[contains(@class, 'product-single__title')]"
-                    }
-                }
-            }
-        }
-        }
-    }
-    
+# Configurar logging principal
+logger = logging.getLogger("main")
+logger.setLevel(logging.INFO)
+console_handler = logging.StreamHandler()
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
 
-    if not os.path.exists('configs'):
-        os.makedirs('configs')
-    
-    with open('configs/scrapers_config.json', 'w') as f:
-        json.dump(config, f, indent=4)
-    
-    print("Example configuration files created in 'configs' directory.")
+def consolidate_results(results: dict, output_path="data/consolidated_results.xlsx"):
+    all_rows = []
 
+    for scraper_name, categories_dict in results.items():
+        if not categories_dict:
+            continue
+        for category_name, products in categories_dict.items():
+            if not products:
+                continue
+            for item in products:
+                item['store'] = scraper_name
+                item['category'] = category_name
+                all_rows.append(item)
 
+    # Si no hay datos, crear Excel vacío con columnas esperadas
+    os.makedirs("data", exist_ok=True)
+    if not all_rows:
+        logger.warning("No data found to export. Creating empty Excel file.")
+        empty_df = pd.DataFrame(columns=["name", "price", "url", "store", "category", "timestamp"])
+        empty_df.to_excel(output_path, index=False)
+    else:
+        df = pd.DataFrame(all_rows)
+        df.to_excel(output_path, index=False)
+        logger.info(f"Excel consolidado guardado en {output_path}")
 
-def main() -> None:
+def main():
+    config_path = "configs/scrapers_config.json"
+    manager = ScraperManager(config_path)
 
-    if not os.path.exists('configs/scrapers_config.json'):
-        create_example_config()
-    
-    logger = LoggerFactory.create_logger("main")
-    
     try:
-        manager = ScraperManager('configs/scrapers_config.json')
         results = manager.run_all()
         manager.make_report()
-        logger.info(f"Scraping completed. Results: {results.keys()}")
     except Exception as e:
-        logger.error(f"Error in main function: {e}", exc_info=True)
+        logger.error(f"Fatal error during scraping execution: {e}", exc_info=True)
 
+    logger.info("Scraping completed. Results: %s", results.keys())
 
 if __name__ == "__main__":
     main()
