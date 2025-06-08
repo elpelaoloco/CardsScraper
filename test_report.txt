@@ -1,0 +1,7 @@
+REPORTE DE TESTS
+========================================
+========================================
+Tests ejecutados: 1
+Tests exitosos : 0
+Fallos         : 0
+Errores        : 1
