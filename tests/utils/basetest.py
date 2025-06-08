@@ -1,5 +1,6 @@
 import unittest
 import json
+import os
 from src.core.scraper_factory import ScraperFactory
 from src.core.category import Category
 
@@ -7,29 +8,25 @@ from src.core.category import Category
 class BaseScraperTest(unittest.TestCase):
     SCRAPER_TYPE = None
     CATEGORY_KEY = None
+    CONFIG_PATH = os.path.join(os.path.dirname(__file__),"..", "..", "configs", "scrapers_config.json")
+
+
 
     @classmethod
     def setUpClass(cls):
-        try:
-            with open('config.json', 'r', encoding='utf-8') as f:
-                all_config = json.load(f)
-        except Exception as e:
-            raise unittest.SkipTest(f"❌ No se pudo cargar 'config.json': {e}")
+        with open(cls.CONFIG_PATH, "r", encoding="utf-8") as f:
+            all_config = json.load(f)
 
-        config = all_config.get(cls.SCRAPER_TYPE)
-        if config is None:
-            raise unittest.SkipTest(f"❌ No se encontró configuración para el scrapper '{cls.SCRAPER_TYPE}' en config.json")
+        scraper_config = all_config["scrapers"].get(cls.SCRAPER_TYPE)
+        
+        if not scraper_config:
+            raise ValueError(f"No se encontró configuración para el tipo '{cls.SCRAPER_TYPE}'")
 
-        try:
-            cls.scraper = ScraperFactory.create_scraper(cls.SCRAPER_TYPE, config)
-        except Exception as e:
-            raise unittest.SkipTest(f"❌ Error creando scraper '{cls.SCRAPER_TYPE}': {e}")
+        cls.scraper = ScraperFactory.create_scraper(cls.SCRAPER_TYPE, scraper_config)
+        cls.category = scraper_config["categories"].get(cls.CATEGORY_KEY)
 
-        try:
-            cls.category = config['categories'][cls.CATEGORY_KEY]
-        except KeyError:
-            raise unittest.SkipTest(f"❌ Categoría '{cls.CATEGORY_KEY}' no encontrada para el scraper '{cls.SCRAPER_TYPE}'")
-
+        if not cls.category:
+            raise ValueError(f"No se encontró categoría '{cls.CATEGORY_KEY}' para el scraper '{cls.SCRAPER_TYPE}'")
     def test_url_is_valid(self):
         self.assertTrue(self.category['url'].startswith('http'), f"⚠️ URL inválida: {self.category['url']}")
 
