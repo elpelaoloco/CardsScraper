@@ -1,5 +1,4 @@
 import time
-import re
 from typing import List, Tuple, Dict, Any
 from src.core.base_scraper import BaseScraper
 from src.core.category import Category
@@ -13,31 +12,28 @@ class GameOfMagicScraper(BaseScraper):
         time.sleep(self.config.get('page_load_delay', 2))
 
     def extract_product_urls(self, category: Category) -> List[Tuple[str, str]]:
-        urls_selector = category.selectors.get('urls_selector')
-        product_selector = category.selectors.get('product_selector')
+        containers_xpath = category.selectors.get('product_selector')
+        self.wait_for_element(containers_xpath)
 
-        if not self.wait_for_element(product_selector):
-            self.logger.error(f"Couldn't find product container for category {category.name}")
-            return []
+        containers = self.driver.find_elements(By.XPATH, containers_xpath)
+        self.logger.info(f"Found {len(containers)} product containers")
+        urls = []
 
-        self.take_screenshot(f"{self.name}_{category.name}_listing.png")
-
-        product_elements = self.driver.find_elements(By.XPATH, product_selector)
-        self.logger.info(f"Found {len(product_elements)} products")
-
-        product_urls = []
-        for element in product_elements:
+        for container in containers:
             try:
-                url_elem = element.find_element(By.XPATH, urls_selector)
-                title = url_elem.get_attribute('title') or url_elem.text.strip()
-                url = url_elem.get_attribute('href')
+                # URL y nombre del producto desde el <a>
+                a_tag = container.find_element(By.XPATH, category.selectors['urls_selector'])
+                url = a_tag.get_attribute("href")
+                name = a_tag.get_attribute("title") or a_tag.text.strip()
 
-                if title and url:
-                    product_urls.append((title, url))
+                if not name or not url:
+                    continue
+
+                urls.append((name, url))
             except Exception as e:
-                self.logger.warning(f"Error extracting product info: {e}")
+                self.logger.warning(f"Error processing product container: {e}")
 
-        return product_urls
+        return urls
 
     def process_product(self, product_url: str, category: Category) -> Dict[str, Any]:
         self.logger.info(f"Processing product: {product_url}")
@@ -46,28 +42,26 @@ class GameOfMagicScraper(BaseScraper):
 
         data = {}
 
-        # Title
+        # Extraer nombre desde el h1
         try:
-            title_selector = category.selectors.get('title_selector')
-            if title_selector:
-                title_element = self.driver.find_element(By.XPATH, title_selector)
-                data['title'] = title_element.text.strip()
-        except Exception:
-            self.logger.warning("Title not found")
+            title_xpath = category.selectors.get('title_selector')
+            if title_xpath:
+                name_el = self.driver.find_element(By.XPATH, title_xpath)
+                data["name"] = name_el.text.strip()
+            else:
+                data["name"] = "undefined"
+        except Exception as e:
+            self.logger.warning(f"No name found: {e}")
+            data["name"] = "undefined"
 
-        # Price
+        # Extraer precio
+        price_xpath = category.selectors.get('price_selector')
         try:
-            price_selector = category.selectors.get('price_selector')
-            if price_selector:
-                price_element = self.driver.find_element(By.XPATH, price_selector)
-                price_text = price_element.text.strip()
-                pattern = r'\d+(?:[\.,]\d+)?'
-                match = re.search(pattern, price_text.replace(".", "").replace(",", "."))
-                if match:
-                    data['price'] = match.group()
-                else:
-                    self.logger.warning(f"Price not matched in: {price_text}")
-        except Exception:
-            self.logger.warning("Price not found")
+            price_el = self.driver.find_element(By.XPATH, price_xpath)
+            price_text = price_el.text.strip()
+            data["price"] = price_text if price_text else ""
+        except Exception as e:
+            self.logger.warning(f"No price found: {e}")
+            data["price"] = ""
 
         return data
