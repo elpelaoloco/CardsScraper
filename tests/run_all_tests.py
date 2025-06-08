@@ -1,7 +1,7 @@
 # tests/run_all_tests.py
 import unittest
 import sys
-from utils.tee import Tee
+from tests.utils.tee import Tee
 
 def run_tests():
     report_path = "test_report.txt"

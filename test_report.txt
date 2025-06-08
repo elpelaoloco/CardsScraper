@@ -1,7 +1,11 @@
 REPORTE DE TESTS
 ========================================
+
+✔ Inicialización exitosa para categoría 'pokemon' con URL 'https://example.com/pokemon'
+✔ Selector inexistente correctamente manejado: None
+✔ Selector de precio encontrado: //span[@class='price']
 ========================================
-Tests ejecutados: 1
-Tests exitosos : 0
+Tests ejecutados: 3
+Tests exitosos : 3
 Fallos         : 0
-Errores        : 1
+Errores        : 0
