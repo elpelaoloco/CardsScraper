@@ -4,7 +4,7 @@
       "type": "thirdimpact",
       "headless": true,
       "page_load_delay": 2,
-      "batch_size": 3,
+      "batch_size": 20,
       "categories": {
         "pokemon": {
           "url": "https://www.thirdimpact.cl/collection/pokemon-trading-card-game",
@@ -18,7 +18,7 @@
             "language_selector": "//div[@id='bs-product-form' and contains(@class, 'form')]//label"
           }
         },
-        "magic": {
+        "magic-the-gathering": {
           "url": "https://www.thirdimpact.cl/collection/magic-the-gathering",
           "selectors": {
             "product_selector": "//section[contains(@class, 'grid__item')]",
@@ -50,7 +50,7 @@
             "language_selector": "//select[@data-name='Idioma']/option"
           }
         },
-        "yugioh": {
+        "yu-gi-oh": {
           "url": "https://carduniverse.cl/collections/yu-gi-oh",
           "selectors": {
             "product_selector": "//div[contains(@class, 'product-grid')]",
@@ -62,7 +62,7 @@
             "language_selector": "//select[@data-name='Idioma']/option"
           }
         },
-        "magic": {
+        "magic-the-gathering": {
           "url": "https://carduniverse.cl/collections/magic-the-gathering",
           "selectors": {
             "product_selector": "//div[contains(@class, 'product-grid')]",
@@ -129,7 +129,7 @@
             "language_selector": "//select[@data-name='Idioma']/option"
           }
         },
-        "magic": {
+        "magic-the-gathering": {
           "url": "https://www.tiendalacomarca.cl/collections/mtg-singles",
           "selectors": {
             "product_selector": "//li[contains(@class, 'grid__item')]",
@@ -158,7 +158,7 @@
             "title_selector": ".//h2[contains(@class, 'text-truncate')]"
           }
         },
-        "magic": {
+        "magic-the-gathering": {
           "url": "https://www.guildreams.com/collection/magic-the-gathering",
           "selectors": {
             "product_selector": "//div[contains(@class, 'bs-product')]",
@@ -167,7 +167,7 @@
             "title_selector": ".//h2[contains(@class, 'text-truncate')]"
           }
         },
-        "yugioh": {
+        "yu-gi-oh": {
           "url": "https://www.guildreams.com/collection/yu-gi-oh",
           "selectors": {
             "product_selector": "//div[contains(@class, 'bs-product')]",
@@ -193,48 +193,13 @@
             "title_selector": ".//h2"
           }
         },
-        "yugioh": {
+        "yu-gi-oh": {
           "url": "https://www.huntercardtcg.com/categoria-producto/yugioh/singles-yugioh/rarity-collection-ii/",
           "selectors": {
             "product_selector": "//li[contains(@class, 'product') and contains(@class, 'type-product')]",
             "urls_selector": ".//a[contains(@href, '/producto/')]",
             "price_selector": ".//span[contains(@class, 'woocommerce-Price-amount')]",
             "title_selector": ".//h2"
-          }
-        }
-      }
-    },
-    "game_of_magic": {
-      "type": "game_of_magic",
-      "headless": true,
-      "page_load_delay": 2,
-      "batch_size": 4,
-      "categories": {
-        "pokemon": {
-          "url": "https://www.gameofmagictienda.cl/collection/pokemon",
-          "selectors": {
-            "product_selector": "//div[contains(@class, 'bs-collection__product')]",
-            "urls_selector": ".//a[contains(@href, '/product/')]",
-            "price_selector": "//div[contains(@class, 'bs-collection__product-final-price')]",
-            "title_selector": "//h1[contains(@class, 'product-title')]"
-          }
-        },
-        "magic": {
-          "url": "https://www.gameofmagictienda.cl/collection/magic",
-          "selectors": {
-            "product_selector": "//div[contains(@class, 'bs-collection__product')]",
-            "urls_selector": ".//a[contains(@href, '/product/')]",
-            "price_selector": "//div[contains(@class, 'bs-collection__product-final-price')]",
-            "title_selector": "//h1[contains(@class, 'product-title')]"
-          }
-        },
-        "yugioh": {
-          "url": "https://www.gameofmagictienda.cl/collection/yugioh",
-          "selectors": {
-            "product_selector": "//div[contains(@class, 'bs-collection__product')]",
-            "urls_selector": ".//a[contains(@href, '/product/')]",
-            "price_selector": "//div[contains(@class, 'bs-collection__product-final-price')]",
-            "title_selector": "//h1[contains(@class, 'product-title')]"
           }
         }
       }
@@ -254,7 +219,7 @@
             "title_selector": ".//h3[contains(@class, 'wd-entities-title')]"
           }
         },
-        "magic": {
+        "magic-the-gathering": {
           "url": "https://elreinodelosduelos.cl/categoria-producto/magic-the-gathering/",
           "selectors": {
             "product_selector": "//div[contains(@class, 'wd-product')]",
@@ -263,7 +228,7 @@
             "title_selector": ".//h3[contains(@class, 'wd-entities-title')]"
           }
         },
-        "yugioh": {
+        "yu-gi-oh": {
           "url": "https://elreinodelosduelos.cl/categoria-producto/yu-gi-oh/",
           "selectors": {
             "product_selector": "//div[contains(@class, 'wd-product')]",

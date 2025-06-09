@@ -1,6 +1,7 @@
 import os
 import json
 import datetime
+import re
 import pandas as pd
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Tuple, Optional
@@ -170,12 +171,21 @@ class BaseScraper(ABC):
                 for idx, (product_name, product_url) in enumerate(product_urls):
                     self.logger.info(f"Processing product {idx+1}/{len(product_urls)}: {product_name}")
                     product_data = self.process_product(product_url, category)
+
                     if product_data:
                         product_data['name'] = product_name
                         product_data['url'] = product_url
-                        product_data['category'] = category.name
+                        product_data['game'] = category.name
                         product_data['timestamp'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         product_data['store'] = self.name
+                        product_data['product_type'] = self.detect_type(product_name)
+                        product_data['img_url']= ""
+                        price = self.clean_price(product_data.get('price', 0))
+                        product_data['price'] = price
+                        product_data['min_price'] = price
+                        if len(product_data.get('description', "")) > 500:
+                            self.logger.info(f"Truncating description for {product_name}")
+                            product_data['description'] = product_data['description'][:450] + "..."
                         processed_count += 1
                         self.results[category.name].append(product_data)
                 process_report[category.name] = {
@@ -195,6 +205,19 @@ class BaseScraper(ABC):
     def get_report(self) -> Dict[str, Any]:
         return self.report
     
+    def detect_type(self,product_name: str) -> str:
+        """
+        Detect the type of the category based on its name or the scraper name.
+        This can be overridden in subclasses for specific logic.
+        """
+        name = product_name.lower()
+        if "booster" in name:
+            return "booster"
+        if "bundle" in name:
+            return "bundle"
+        else:
+            return "singles"
+    
     @abstractmethod
     def navigate_to_category(self, category: Category) -> None:
 
@@ -210,3 +233,8 @@ class BaseScraper(ABC):
 
         pass
 
+    def clean_price(self,raw_price):
+        match = re.findall(r'\d+', raw_price)
+        if not match:
+            return 0
+        return int(''.join(match)) 
