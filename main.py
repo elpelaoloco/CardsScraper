@@ -1,6 +1,7 @@
 import logging
 from src.core.scraper_manager import ScraperManager
 import pandas as pd
+from src.utils.save_results import save_dict_as_json
 import os
 
 # Configurar logging principal
@@ -37,11 +38,12 @@ def consolidate_results(results: dict, output_path="data/consolidated_results.xl
         logger.info(f"Excel consolidado guardado en {output_path}")
 
 def main():
-    config_path = "configs/scrapers_config.json"
+    config_path = "configs/reino_scraper.json"
     manager = ScraperManager(config_path)
 
     try:
         results = manager.run_all()
+        save_dict_as_json(results, "data/prod_result_2.json")
         manager.make_report()
     except Exception as e:
         logger.error(f"Fatal error during scraping execution: {e}", exc_info=True)
