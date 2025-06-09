@@ -6,8 +6,8 @@ from src.core.category import Category
 
 
 class BaseScraperTest(unittest.TestCase):
-    SCRAPER_TYPE = None
-    CATEGORY_KEY = None
+    SCRAPER_TYPE = "la_comarca"
+    CATEGORY_KEY = "pokemon"
     CONFIG_PATH = os.path.join(os.path.dirname(__file__),"..", "..", "configs", "scrapers_config.json")
 
 
