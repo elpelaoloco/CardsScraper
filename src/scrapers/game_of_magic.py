@@ -3,6 +3,7 @@ from typing import List, Tuple, Dict, Any
 from src.core.base_scraper import BaseScraper
 from src.core.category import Category
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
 
 
 class GameOfMagicScraper(BaseScraper):
@@ -21,15 +22,18 @@ class GameOfMagicScraper(BaseScraper):
 
         for container in containers:
             try:
-                # URL y nombre del producto desde el <a>
-                a_tag = container.find_element(By.XPATH, category.selectors['urls_selector'])
+                urls_selector = category.selectors.get('urls_selector')
+                if not urls_selector:
+                    raise ValueError("No urls_selector defined in config")
+
+                a_tag = container.find_element(By.XPATH, urls_selector)
                 url = a_tag.get_attribute("href")
                 name = a_tag.get_attribute("title") or a_tag.text.strip()
 
-                if not name or not url:
-                    continue
-
-                urls.append((name, url))
+                if url and name:
+                    urls.append((name, url))
+            except NoSuchElementException:
+                self.logger.warning("Product container doesn't contain a valid link")
             except Exception as e:
                 self.logger.warning(f"Error processing product container: {e}")
 
@@ -42,7 +46,7 @@ class GameOfMagicScraper(BaseScraper):
 
         data = {}
 
-        # Extraer nombre desde el h1
+        # Extraer nombre desde el título
         try:
             title_xpath = category.selectors.get('title_selector')
             if title_xpath:
@@ -55,8 +59,8 @@ class GameOfMagicScraper(BaseScraper):
             data["name"] = "undefined"
 
         # Extraer precio
-        price_xpath = category.selectors.get('price_selector')
         try:
+            price_xpath = category.selectors.get('price_selector')
             price_el = self.driver.find_element(By.XPATH, price_xpath)
             price_text = price_el.text.strip()
             data["price"] = price_text if price_text else ""

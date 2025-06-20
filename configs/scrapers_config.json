@@ -154,8 +154,9 @@
           "selectors": {
             "product_selector": "//div[contains(@class, 'bs-product')]",
             "urls_selector": ".//a[contains(@href, '/product/')]",
-            "price_selector": ".//div[contains(@class, 'bs-product-price')]//div[contains(@class, 'bs-product-final-price')]",
-            "title_selector": ".//h2[contains(@class, 'text-truncate')]"
+            "price_selector": "//span[contains(@class, 'h2')] | //div[contains(@class, 'h3')]",
+            "title_selector": "//h1[contains(@class, 'h2')]"
+
           }
         },
         "magic": {
@@ -163,8 +164,9 @@
           "selectors": {
             "product_selector": "//div[contains(@class, 'bs-product')]",
             "urls_selector": ".//a[contains(@href, '/product/')]",
-            "price_selector": ".//div[contains(@class, 'bs-product-price')]//div[contains(@class, 'bs-product-final-price')]",
-            "title_selector": ".//h2[contains(@class, 'text-truncate')]"
+            "price_selector": "//span[contains(@class, 'h2')] | //div[contains(@class, 'h3')]",
+            "title_selector": "//h1[contains(@class, 'h2')]"
+
           }
         },
         "yugioh": {
@@ -172,8 +174,9 @@
           "selectors": {
             "product_selector": "//div[contains(@class, 'bs-product')]",
             "urls_selector": ".//a[contains(@href, '/product/')]",
-            "price_selector": ".//div[contains(@class, 'bs-product-price')]//div[contains(@class, 'bs-product-final-price')]",
-            "title_selector": ".//h2[contains(@class, 'text-truncate')]"
+            "price_selector": "//span[contains(@class, 'h2')] | //div[contains(@class, 'h3')]",
+            "title_selector": "//h1[contains(@class, 'h2')]"
+
           }
         }
       }
@@ -215,8 +218,9 @@
           "selectors": {
             "product_selector": "//div[contains(@class, 'bs-collection__product')]",
             "urls_selector": ".//a[contains(@href, '/product/')]",
-            "price_selector": "//div[contains(@class, 'bs-collection__product-final-price')]",
-            "title_selector": "//h1[contains(@class, 'product-title')]"
+            "price_selector": "//span[contains(@class, 'bs-product__final-price')]",
+            "title_selector": "//div[contains(@class, 'bs-product-title')]"
+
           }
         },
         "magic": {
@@ -224,8 +228,9 @@
           "selectors": {
             "product_selector": "//div[contains(@class, 'bs-collection__product')]",
             "urls_selector": ".//a[contains(@href, '/product/')]",
-            "price_selector": "//div[contains(@class, 'bs-collection__product-final-price')]",
-            "title_selector": "//h1[contains(@class, 'product-title')]"
+            "price_selector": "//span[contains(@class, 'bs-product__final-price')]",
+            "title_selector": "//div[contains(@class, 'bs-product-title')]"
+
           }
         },
         "yugioh": {
@@ -233,8 +238,8 @@
           "selectors": {
             "product_selector": "//div[contains(@class, 'bs-collection__product')]",
             "urls_selector": ".//a[contains(@href, '/product/')]",
-            "price_selector": "//div[contains(@class, 'bs-collection__product-final-price')]",
-            "title_selector": "//h1[contains(@class, 'product-title')]"
+            "price_selector": "//span[contains(@class, 'bs-product__final-price')]",
+            "title_selector": "//div[contains(@class, 'bs-product-title')]"
           }
         }
       }
