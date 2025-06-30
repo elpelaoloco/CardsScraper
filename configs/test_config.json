@@ -1,30 +1,41 @@
 {
   "scrapers": {
-    "hunter_card_tcg": {
-      "type": "hunter_card_tcg",
+    "el_reino": {
+      "type": "el_reino",
       "headless": true,
       "page_load_delay": 2,
       "batch_size": 3,
       "categories": {
         "pokemon": {
-          "url": "https://www.huntercardtcg.com/categoria-producto/cartas-sueltas/silver-tempest/",
+          "url": "https://elreinodelosduelos.cl/categoria-producto/pokemon-tcg/sobres-pokemon-tcg/",
           "selectors": {
-            "product_selector": "//li[contains(@class, 'product') and contains(@class, 'type-product')]",
+            "product_selector": "//div[contains(@class, 'wd-product')]",
             "urls_selector": ".//a[contains(@href, '/producto/')]",
-            "price_selector": ".//span[contains(@class, 'woocommerce-Price-amount')]",
-            "title_selector": ".//h2",
-            "image_selector": "//img[contains(@class, 'wp-post-image')]"
+            "price_selector": ".//ins//span[contains(@class, 'woocommerce-Price-amount')]",
+            "title_selector": ".//h3[contains(@class, 'wd-entities-title')]",
+            "image_selector": "//figure[contains(@class, 'woocommerce-product-gallery__image')]//img"
+
+          }
+        },
+        "magic": {
+          "url": "https://elreinodelosduelos.cl/categoria-producto/magic-the-gathering/",
+          "selectors": {
+            "product_selector": "//div[contains(@class, 'wd-product')]",
+            "urls_selector": ".//a[contains(@href, '/producto/')]",
+            "price_selector": ".//ins//span[contains(@class, 'woocommerce-Price-amount')]",
+            "title_selector": ".//h3[contains(@class, 'wd-entities-title')]",
+            "image_selector": "//figure[contains(@class, 'woocommerce-product-gallery__image')]//img"
 
           }
         },
         "yugioh": {
-          "url": "https://www.huntercardtcg.com/categoria-producto/yugioh/singles-yugioh/rarity-collection-ii/",
+          "url": "https://elreinodelosduelos.cl/categoria-producto/yu-gi-oh/",
           "selectors": {
-            "product_selector": "//li[contains(@class, 'product') and contains(@class, 'type-product')]",
+            "product_selector": "//div[contains(@class, 'wd-product')]",
             "urls_selector": ".//a[contains(@href, '/producto/')]",
-            "price_selector": ".//span[contains(@class, 'woocommerce-Price-amount')]",
-            "title_selector": ".//h2",
-            "image_selector": "//img[contains(@class, 'wp-post-image')]"
+            "price_selector": ".//ins//span[contains(@class, 'woocommerce-Price-amount')]",
+            "title_selector": ".//h3[contains(@class, 'wd-entities-title')]",
+            "image_selector": "//figure[contains(@class, 'woocommerce-product-gallery__image')]//img"
 
           }
         }

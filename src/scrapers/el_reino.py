@@ -56,6 +56,21 @@ class ElReinoScraper(BaseScraper):
             traceback.print_exc()
             self.logger.warning(f"Price not found: {e}")
             data["price"] = ""
+        image_selector = category.selectors.get("image_selector")
+        try:
+            if image_selector:
+                image_el = self.driver.find_element(By.XPATH, image_selector)
+                img_url = image_el.get_attribute("src")
+                if img_url and not img_url.startswith("data:image"):
+                    data["img_url"] = img_url
+                else:
+                    data["img_url"] = ""
+                    self.logger.warning("Fallback image or empty URL encountered")
+            else:
+                data["img_url"] = ""
+        except Exception as e:
+            self.logger.warning(f"Image not found: {e}")
+            data["img_url"] = ""
 
         return data
     

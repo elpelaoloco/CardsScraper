@@ -237,7 +237,9 @@
             "product_selector": "//div[contains(@class, 'wd-product')]",
             "urls_selector": ".//a[contains(@href, '/producto/')]",
             "price_selector": ".//ins//span[contains(@class, 'woocommerce-Price-amount')]",
-            "title_selector": ".//h3[contains(@class, 'wd-entities-title')]"
+            "title_selector": ".//h3[contains(@class, 'wd-entities-title')]",
+            "image_selector": "//figure[contains(@class, 'woocommerce-product-gallery__image')]//img"
+
           }
         },
         "magic": {
@@ -246,7 +248,9 @@
             "product_selector": "//div[contains(@class, 'wd-product')]",
             "urls_selector": ".//a[contains(@href, '/producto/')]",
             "price_selector": ".//ins//span[contains(@class, 'woocommerce-Price-amount')]",
-            "title_selector": ".//h3[contains(@class, 'wd-entities-title')]"
+            "title_selector": ".//h3[contains(@class, 'wd-entities-title')]",
+            "image_selector": "//figure[contains(@class, 'woocommerce-product-gallery__image')]//img"
+
           }
         },
         "yugioh": {
@@ -255,7 +259,9 @@
             "product_selector": "//div[contains(@class, 'wd-product')]",
             "urls_selector": ".//a[contains(@href, '/producto/')]",
             "price_selector": ".//ins//span[contains(@class, 'woocommerce-Price-amount')]",
-            "title_selector": ".//h3[contains(@class, 'wd-entities-title')]"
+            "title_selector": ".//h3[contains(@class, 'wd-entities-title')]",
+            "image_selector": "//figure[contains(@class, 'woocommerce-product-gallery__image')]//img"
+
           }
         }
       }
