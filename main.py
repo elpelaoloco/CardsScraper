@@ -38,7 +38,7 @@ def consolidate_results(results: dict, output_path="data/consolidated_results.xl
         logger.info(f"Excel consolidado guardado en {output_path}")
 
 def main():
-    config_path = "configs/test_config.json"
+    config_path = "configs/scrapers_config.json"
     manager = ScraperManager(config_path)
 
     try:

@@ -49,9 +49,6 @@ class ScraperManager:
             "yugioh": "yugioh",
             "pokemon": "pokemon",
             "pokemon_singles": "pokemon",
-            "prismatic_evolutions": "pokemon",
-            "twilight_masquerade": "pokemon",
-            "temporal_forces": "pokemon"
         }
 
         if category_name in mapping:
