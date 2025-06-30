@@ -1,45 +1,37 @@
 {
   "scrapers": {
-    "card_universe": {
-      "type": "card_universe",
+    "la_comarca": {
+      "type": "lacomarca",
       "headless": true,
       "page_load_delay": 2,
-      "batch_size": 3,
       "categories": {
         "pokemon": {
-          "url": "https://carduniverse.cl/collections/pokemon-tcg",
+          "url": "https://www.tiendalacomarca.cl/collections/pokemon-singles",
           "selectors": {
-            "product_selector": "//div[contains(@class, 'product-grid')]",
-            "urls_selector": "//a[@class='prod-th']",
-            "price_selector": "//div[contains(@class, 'price')]//span[contains(@class, 'money')]",
-            "stock_selector": "//p[contains(text(), 'Agotado')]",
-            "description_selector": "//blockquote//ul[1]|//div[contains(@class, 'product-description')]",
-            "title_selector": "//a[@class='prod-th']/span[@class='product-title']/span[@class='title']",
-            "language_selector": "//select[@data-name='Idioma']/option"
-          }
-        },
-        "yugioh": {
-          "url": "https://carduniverse.cl/collections/yu-gi-oh",
-          "selectors": {
-            "product_selector": "//div[contains(@class, 'product-grid')]",
-            "urls_selector": "//a[@class='prod-th']",
-            "price_selector": "//div[contains(@class, 'price')]//span[contains(@class, 'money')]",
-            "stock_selector": "//p[contains(text(), 'Agotado')]",
-            "description_selector": "//blockquote//ul[1]|//div[contains(@class, 'product-description')]",
-            "title_selector": "//a[@class='prod-th']/span[@class='product-title']/span[@class='title']",
-            "language_selector": "//select[@data-name='Idioma']/option"
+            "product_selector": "//li[contains(@class, 'grid__item')]",
+            "urls_selector": ".//a[contains(@href, '/products/')]",
+            "price_selector": ".//span[contains(@class,'product-price__price')]",
+            "stock_selector": ".//p[contains(text(), 'Agotado')]",
+            "description_selector": "//div[contains(@class, 'product-description')]",
+            "title_selector": ".//div[contains(@class, 'product-title')]",
+            "language_selector": "//select[@data-name='Idioma']/option",
+            "image_selector": "//div[contains(@class, 'product-single__photo') and contains(@class, 'js-zoom-enabled')]"
+
+
           }
         },
         "magic": {
-          "url": "https://carduniverse.cl/collections/magic-the-gathering",
+          "url": "https://www.tiendalacomarca.cl/collections/mtg-singles",
           "selectors": {
-            "product_selector": "//div[contains(@class, 'product-grid')]",
-            "urls_selector": "//a[@class='prod-th']",
-            "price_selector": "//div[contains(@class, 'price')]//span[contains(@class, 'money')]",
-            "stock_selector": "//p[contains(text(), 'Agotado')]",
-            "description_selector": "//blockquote//ul[1]|//div[contains(@class, 'product-description')]",
-            "title_selector": "//a[@class='prod-th']/span[@class='product-title']/span[@class='title']",
-            "language_selector": "//select[@data-name='Idioma']/option"
+            "product_selector": "//li[contains(@class, 'grid__item')]",
+            "urls_selector": ".//a[contains(@href, '/products/')]",
+            "price_selector": ".//span[contains(@class,'product-price__price')]",
+            "stock_selector": ".//p[contains(text(), 'Agotado')]",
+            "description_selector": "//div[contains(@class, 'product-description')]",
+            "title_selector": ".//div[contains(@class, 'product-title')]",
+            "language_selector": "//select[@data-name='Idioma']/option",
+            "image_selector": "//div[contains(@class, 'product-single__photo') and contains(@class, 'js-zoom-enabled')]"
+
           }
         }
       }

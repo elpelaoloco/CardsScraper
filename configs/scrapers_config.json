@@ -83,42 +83,6 @@
       "headless": true,
       "page_load_delay": 2,
       "categories": {
-        "prismatic_evolutions": {
-          "url": "https://www.tiendalacomarca.cl/collections/prismatic-evolutions-singles",
-          "selectors": {
-            "product_selector": "//li[contains(@class, 'grid__item')]",
-            "urls_selector": ".//a[contains(@href, '/products/')]",
-            "price_selector": ".//span[contains(@class,'product-price__price')]",
-            "stock_selector": ".//p[contains(text(), 'Agotado')]",
-            "description_selector": "//div[contains(@class, 'product-description')]",
-            "title_selector": ".//div[contains(@class, 'product-title')]",
-            "language_selector": "//select[@data-name='Idioma']/option"
-          }
-        },
-        "twilight_masquerade": {
-          "url": "https://www.tiendalacomarca.cl/collections/singles-pokemon-twilight-masquerade",
-          "selectors": {
-            "product_selector": "//li[contains(@class, 'grid__item')]",
-            "urls_selector": ".//a[contains(@href, '/products/')]",
-            "price_selector": ".//span[contains(@class,'product-price__price')]",
-            "stock_selector": ".//p[contains(text(), 'Agotado')]",
-            "description_selector": "//div[contains(@class, 'product-description')]",
-            "title_selector": ".//div[contains(@class, 'product-title')]",
-            "language_selector": "//select[@data-name='Idioma']/option"
-          }
-        },
-        "temporal_forces": {
-          "url": "https://www.tiendalacomarca.cl/collections/singles-tef-temporal-forces",
-          "selectors": {
-            "product_selector": "//li[contains(@class, 'grid__item')]",
-            "urls_selector": ".//a[contains(@href, '/products/')]",
-            "price_selector": ".//span[contains(@class,'product-price__price')]",
-            "stock_selector": ".//p[contains(text(), 'Agotado')]",
-            "description_selector": "//div[contains(@class, 'product-description')]",
-            "title_selector": ".//div[contains(@class, 'product-title')]",
-            "language_selector": "//select[@data-name='Idioma']/option"
-          }
-        },
         "pokemon": {
           "url": "https://www.tiendalacomarca.cl/collections/pokemon-singles",
           "selectors": {

@@ -67,5 +67,18 @@ class LaComarcaScraper(BaseScraper):
                 data["price"] = ""
         else:
             data["price"] = ""
+        # Imagen
+        image_selector = category.selectors.get('image_selector')
+        if image_selector:
+            try:
+                image_el = self.driver.find_element(By.XPATH, image_selector)
+                image_url = image_el.get_attribute("data-zoom")
+                data["img_url"] = "https:"+image_url
+            except Exception as e:
+                self.logger.warning(f"Image not found: {e}")
+                data["img_url"] = ""
+        else:
+            data["img_url"] = ""
+
 
         return data
