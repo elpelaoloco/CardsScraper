@@ -77,5 +77,13 @@ class CardUniverseScraper(BaseScraper):
         if description_selector:
             description_element = self.driver.find_element(By.XPATH, description_selector)
             data['description'] = description_element.text.strip()
-        
+            # Imagen
+        try:
+            img_el = self.driver.find_element(By.XPATH, "//div[starts-with(@id, 'ImageZoom-template')]//img")
+            data["img_url"] = img_el.get_attribute("src")
+        except Exception:
+            self.logger.warning("Image element not found")
+            data["img_url"] = ""
+
+                
         return data

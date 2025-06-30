@@ -1,35 +1,45 @@
 {
   "scrapers": {
-    "thirdimpact": {
-      "type": "thirdimpact",
+    "card_universe": {
+      "type": "card_universe",
       "headless": true,
       "page_load_delay": 2,
       "batch_size": 3,
       "categories": {
         "pokemon": {
-          "url": "https://www.thirdimpact.cl/collection/pokemon-trading-card-game",
+          "url": "https://carduniverse.cl/collections/pokemon-tcg",
           "selectors": {
-            "product_selector": "//section[contains(@class, 'grid__item')]",
-            "urls_selector": ".//a[contains(@class, 'bs-collection__product-info')]",
-            "price_selector": ".//span[contains(@class, 'bs-product__final-price')]",
-            "stock_selector": ".//p[contains(text(), 'Agotado')]",
-            "description_selector": "//section[@class='bs-product-description']",
-            "title_selector": "//h1[contains(@class, 'bs-product__title')]",
-            "image_selector": "//picture//img",
-            "language_selector": "//div[@id='bs-product-form' and contains(@class, 'form')]//label"
+            "product_selector": "//div[contains(@class, 'product-grid')]",
+            "urls_selector": "//a[@class='prod-th']",
+            "price_selector": "//div[contains(@class, 'price')]//span[contains(@class, 'money')]",
+            "stock_selector": "//p[contains(text(), 'Agotado')]",
+            "description_selector": "//blockquote//ul[1]|//div[contains(@class, 'product-description')]",
+            "title_selector": "//a[@class='prod-th']/span[@class='product-title']/span[@class='title']",
+            "language_selector": "//select[@data-name='Idioma']/option"
+          }
+        },
+        "yugioh": {
+          "url": "https://carduniverse.cl/collections/yu-gi-oh",
+          "selectors": {
+            "product_selector": "//div[contains(@class, 'product-grid')]",
+            "urls_selector": "//a[@class='prod-th']",
+            "price_selector": "//div[contains(@class, 'price')]//span[contains(@class, 'money')]",
+            "stock_selector": "//p[contains(text(), 'Agotado')]",
+            "description_selector": "//blockquote//ul[1]|//div[contains(@class, 'product-description')]",
+            "title_selector": "//a[@class='prod-th']/span[@class='product-title']/span[@class='title']",
+            "language_selector": "//select[@data-name='Idioma']/option"
           }
         },
         "magic": {
-          "url": "https://www.thirdimpact.cl/collection/magic-the-gathering",
+          "url": "https://carduniverse.cl/collections/magic-the-gathering",
           "selectors": {
-            "product_selector": "//section[contains(@class, 'grid__item')]",
-            "urls_selector": ".//a[contains(@class, 'bs-collection__product-info')]",
-            "price_selector": ".//span[contains(@class, 'bs-product__final-price')]",
-            "stock_selector": ".//p[contains(text(), 'Agotado')]",
-            "description_selector": "//section[@class='bs-product-description']",
-            "title_selector": "//h1[contains(@class, 'bs-product__title')]",
-            "image_selector": "//picture//img",
-            "language_selector": "//div[@id='bs-product-form' and contains(@class, 'form')]//label"
+            "product_selector": "//div[contains(@class, 'product-grid')]",
+            "urls_selector": "//a[@class='prod-th']",
+            "price_selector": "//div[contains(@class, 'price')]//span[contains(@class, 'money')]",
+            "stock_selector": "//p[contains(text(), 'Agotado')]",
+            "description_selector": "//blockquote//ul[1]|//div[contains(@class, 'product-description')]",
+            "title_selector": "//a[@class='prod-th']/span[@class='product-title']/span[@class='title']",
+            "language_selector": "//select[@data-name='Idioma']/option"
           }
         }
       }
