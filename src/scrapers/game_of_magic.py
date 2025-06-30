@@ -46,9 +46,9 @@ class GameOfMagicScraper(BaseScraper):
 
         data = {}
 
-        # Extraer nombre desde el título
+        # Título
+        title_xpath = category.selectors.get('title_selector')
         try:
-            title_xpath = category.selectors.get('title_selector')
             if title_xpath:
                 name_el = self.driver.find_element(By.XPATH, title_xpath)
                 data["name"] = name_el.text.strip()
@@ -58,14 +58,29 @@ class GameOfMagicScraper(BaseScraper):
             self.logger.warning(f"No name found: {e}")
             data["name"] = "undefined"
 
-        # Extraer precio
+        # Precio
+        price_xpath = category.selectors.get('price_selector')
         try:
-            price_xpath = category.selectors.get('price_selector')
-            price_el = self.driver.find_element(By.XPATH, price_xpath)
-            price_text = price_el.text.strip()
-            data["price"] = price_text if price_text else ""
+            if price_xpath:
+                price_el = self.driver.find_element(By.XPATH, price_xpath)
+                price_text = price_el.text.strip()
+                data["price"] = price_text if price_text else ""
+            else:
+                data["price"] = ""
         except Exception as e:
             self.logger.warning(f"No price found: {e}")
             data["price"] = ""
+
+        # Imagen
+        image_xpath = category.selectors.get('image_selector')
+        try:
+            if image_xpath:
+                img_el = self.driver.find_element(By.XPATH, image_xpath)
+                data["img_url"] = img_el.get_attribute("src")
+            else:
+                data["img_url"] = ""
+        except Exception as e:
+            self.logger.warning(f"No image found: {e}")
+            data["img_url"] = ""
 
         return data

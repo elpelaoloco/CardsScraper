@@ -101,5 +101,17 @@ class GuildDreamsScraper(BaseScraper):
             except Exception:
                 self.logger.warning("Error extracting language")
                 data['language'] = "unknown"
+        # Imagen
+        image_selector = category.selectors.get('image_selector')
+        if image_selector:
+            try:
+                image_el = self.driver.find_element(By.XPATH, image_selector)
+                data['img_url'] = image_el.get_attribute("src")
+            except Exception:
+                self.logger.warning("Image element not found")
+                data['img_url'] = ""
+        else:
+            data['img_url'] = ""
+
 
         return data

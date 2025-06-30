@@ -12,8 +12,8 @@
             "product_selector": "//div[contains(@class, 'bs-product')]",
             "urls_selector": ".//a[contains(@href, '/product/')]",
             "price_selector": "//span[contains(@class, 'h2')] | //div[contains(@class, 'h3')]",
-            "title_selector": "//h1[contains(@class, 'h2')]"
-
+            "title_selector": "//h1[contains(@class, 'h2')]",
+            "image_selector": "//div[contains(@class, 'bs-img-square')]//img"
           }
         },
         "magic": {
@@ -22,8 +22,8 @@
             "product_selector": "//div[contains(@class, 'bs-product')]",
             "urls_selector": ".//a[contains(@href, '/product/')]",
             "price_selector": "//span[contains(@class, 'h2')] | //div[contains(@class, 'h3')]",
-            "title_selector": "//h1[contains(@class, 'h2')]"
-
+            "title_selector": "//h1[contains(@class, 'h2')]",
+            "image_selector": "//div[contains(@class, 'bs-img-square')]//img"
           }
         },
         "yugioh": {
@@ -32,8 +32,8 @@
             "product_selector": "//div[contains(@class, 'bs-product')]",
             "urls_selector": ".//a[contains(@href, '/product/')]",
             "price_selector": "//span[contains(@class, 'h2')] | //div[contains(@class, 'h3')]",
-            "title_selector": "//h1[contains(@class, 'h2')]"
-
+            "title_selector": "//h1[contains(@class, 'h2')]",
+            "image_selector": "//div[contains(@class, 'bs-img-square')]//img"
           }
         }
       }
@@ -50,7 +50,8 @@
             "product_selector": "//div[contains(@class, 'bs-collection__product')]",
             "urls_selector": ".//a[contains(@href, '/product/')]",
             "price_selector": "//span[contains(@class, 'bs-product__final-price')]",
-            "title_selector": "//div[contains(@class, 'bs-product-title')]"
+            "title_selector": "//h1[contains(@class, 'bs-product__title')]",
+            "image_selector": "//div[contains(@class, 'bs-img-square')]//img[contains(@src, 'cloudfront')]"
 
           }
         },
@@ -60,8 +61,8 @@
             "product_selector": "//div[contains(@class, 'bs-collection__product')]",
             "urls_selector": ".//a[contains(@href, '/product/')]",
             "price_selector": "//span[contains(@class, 'bs-product__final-price')]",
-            "title_selector": "//div[contains(@class, 'bs-product-title')]"
-
+            "title_selector": "//h1[contains(@class, 'bs-product__title')]",
+            "image_selector": "//div[contains(@class, 'bs-img-square')]//img[contains(@src, 'cloudfront')]"
           }
         },
         "yugioh": {
@@ -70,10 +71,12 @@
             "product_selector": "//div[contains(@class, 'bs-collection__product')]",
             "urls_selector": ".//a[contains(@href, '/product/')]",
             "price_selector": "//span[contains(@class, 'bs-product__final-price')]",
-            "title_selector": "//div[contains(@class, 'bs-product-title')]"
+            "title_selector": "//h1[contains(@class, 'bs-product__title')]",
+            "image_selector": "//div[contains(@class, 'bs-img-square')]//img[contains(@src, 'cloudfront')]"
           }
         }
       }
     }
+
   }
 }

@@ -179,7 +179,7 @@ class BaseScraper(ABC):
                         product_data['timestamp'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         product_data['store'] = self.name
                         product_data['product_type'] = self.detect_type(product_name)
-                        product_data['img_url']= ""
+                        #product_data['img_url']= ""
                         price = self.clean_price(product_data.get('price', 0))
                         product_data['price'] = price
                         product_data['min_price'] = price
