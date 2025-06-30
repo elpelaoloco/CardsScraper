@@ -57,6 +57,22 @@ class ThirdImpact(BaseScraper):
                 data['price'] = match.group()
             else:
                 data['price'] = price_text
+                # Imagen
+        try:
+            img_element = self.driver.find_element(By.XPATH, "//picture//img")
+            self.driver.execute_script("arguments[0].scrollIntoView(true);", img_element)
+            time.sleep(1)
+
+            img_url = img_element.get_attribute("data-src") or img_element.get_attribute("src")
+            if not img_url or img_url.startswith("data:image"):
+                self.logger.warning("Image fallback failed: placeholder found")
+                img_url = ""
+
+            data["img_url"] = img_url
+        except Exception as e:
+            self.logger.warning(f"Image element not found: {e}")
+            data["img_url"] = ""
+
 
         
         description_selector = category.selectors.get('description_selector')
