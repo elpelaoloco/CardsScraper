@@ -96,5 +96,16 @@ class HunterCardTCG(BaseScraper):
                 data['language'] = matches[-1] if matches else "unknown"
         except NoSuchElementException:
             data["language"] = "unknown"
+        image_selector = category.selectors.get("image_selector")
+        try:
+            if image_selector:
+                image_el = self.driver.find_element(By.XPATH, image_selector)
+                data["img_url"] = image_el.get_attribute("src")
+            else:
+                data["img_url"] = ""
+        except Exception as e:
+            self.logger.warning(f"Image not found: {e}")
+            data["img_url"] = ""
+
 
         return data
