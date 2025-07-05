@@ -1,0 +1,46 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@v0.1.5
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ubuntu
+        key: ${{ secrets.AWS_KEY }}
+        script: |
+          # Navigate to project directory
+          cd /home/ubuntu/my-project || {
+            echo "First time - cloning repository"
+            git clone https://github.com/${{ github.repository }}.git my-project
+            cd my-project
+          }
+          
+          # Update code
+          echo "Updating code..."
+          git pull origin main
+          
+          # Stop existing containers
+          echo "Stopping containers..."
+          docker compose down || true
+          
+          # Clean up old images (optional)
+          echo "Cleaning up old images..."
+          docker system prune -f || true
+          
+          # Build and start containers
+          echo "Building and starting containers..."
+          docker compose up -d --build
+          
+          # Check container status
+          echo "Checking container status..."
+          docker compose ps
+          
+          echo "Deployment completed!"

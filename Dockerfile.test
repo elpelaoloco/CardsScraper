@@ -1,0 +1,27 @@
+FROM python:3.11-slim
+
+RUN apt-get update && apt-get install -y \
+    chromium \
+    chromium-driver \
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -s /usr/bin/chromium /usr/bin/google-chrome
+
+WORKDIR /app
+
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+
+COPY requirements-test.txt ./
+RUN pip install --no-cache-dir -r requirements-test.txt
+
+COPY requirements.txt* ./
+RUN if [ -f requirements.txt ]; then pip install --no-cache-dir -r requirements.txt; fi
+
+COPY pytest.ini ./
+
+COPY app/ ./
+COPY tests/ ./tests/
+
+ENTRYPOINT ["python", "-m", "pytest"]
+
+CMD ["-v", "--cov=app", "--cov-report=term-missing", "--cov-report=xml:coverage.xml", "tests/"]
