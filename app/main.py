@@ -4,7 +4,6 @@ import pandas as pd
 from src.utils.save_results import save_dict_as_json
 import os
 
-# Configurar logging principal
 logger = logging.getLogger("main")
 logger.setLevel(logging.INFO)
 console_handler = logging.StreamHandler()
@@ -26,7 +25,6 @@ def consolidate_results(results: dict, output_path="data/consolidated_results.xl
                 item['category'] = category_name
                 all_rows.append(item)
 
-    # Si no hay datos, crear Excel vacío con columnas esperadas
     os.makedirs("data", exist_ok=True)
     if not all_rows:
         logger.warning("No data found to export. Creating empty Excel file.")
@@ -43,6 +41,8 @@ def main():
 
     try:
         results = manager.run_all()
+        json_file = "data/prod_result.json"
+        os.makedirs("data", exist_ok=True)
         save_dict_as_json(results, "data/prod_result_2.json")
         manager.make_report()
     except Exception as e:

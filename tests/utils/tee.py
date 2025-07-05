@@ -1,4 +1,3 @@
-# tests/utils/tee.py
 import sys
 
 class Tee:
