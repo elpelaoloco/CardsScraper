@@ -1,0 +1,23 @@
+name: Docker Tests
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run tests with Docker Compose
+      run: |
+        docker-compose -f docker-compose.test.yaml up --build --abort-on-container-exit
+        exit_code=$?
+        docker-compose -f docker-compose.test.yaml down
+        exit $exit_code
+    
+    - name: Clean up on failure
+      if: failure()
+      run: docker-compose -f docker-compose.test.yaml down
