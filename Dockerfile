@@ -9,15 +9,11 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 COPY requirements.txt* ./
-COPY requirements-test.txt* ./
 
 RUN if [ -f requirements.txt ]; then pip install --no-cache-dir -r requirements.txt; fi
-RUN if [ -f requirements-test.txt ]; then pip install --no-cache-dir -r requirements-test.txt; fi
 
 COPY app/ ./
 
-COPY tests/ ./tests/
-
 EXPOSE 8000
 
-ENTRYPOINT ["python", "-m", "pytest"]
+ENTRYPOINT ["python", "main.py"]
