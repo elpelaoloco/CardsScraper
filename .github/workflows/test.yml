@@ -15,7 +15,7 @@ jobs:
       run: |
         docker compose -f docker-compose.test.yaml up --build --abort-on-container-exit
         exit_code=$?
-        docke compose -f docker-compose.test.yaml down
+        docker compose -f docker-compose.test.yaml down
         exit $exit_code
     
     - name: Clean up on failure
