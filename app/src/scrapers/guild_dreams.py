@@ -8,6 +8,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+
 class GuildDreamsScraper(BaseScraper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -26,7 +27,7 @@ class GuildDreamsScraper(BaseScraper):
                 src = el.get_attribute("data-src") or el.get_attribute("src")
                 if src and not src.startswith("data:image"):
                     return src
-            except:
+            except BaseException:
                 pass
             time.sleep(0.5)
         return ""
@@ -36,7 +37,8 @@ class GuildDreamsScraper(BaseScraper):
         image_selector = category.selectors.get('image_selector')
 
         if not self.wait_for_element(urls_selector):
-            self.logger.error(f"Couldn't find title elements for category {category.name}")
+            self.logger.error(
+                f"Couldn't find title elements for category {category.name}")
             return []
 
         self.take_screenshot(f"{self.name}_{category.name}_listing.png")
@@ -52,9 +54,11 @@ class GuildDreamsScraper(BaseScraper):
 
                 # Buscar imagen desde el elemento padre
                 try:
-                    container = element.find_element(By.XPATH, "./ancestor::div[contains(@class, 'bs-product')]")
+                    container = element.find_element(
+                        By.XPATH, "./ancestor::div[contains(@class, 'bs-product')]")
                     img_el = container.find_element(By.XPATH, ".//img")
-                    img_url = img_el.get_attribute("data-src") or img_el.get_attribute("src")
+                    img_url = img_el.get_attribute(
+                        "data-src") or img_el.get_attribute("src")
                     if not img_url or img_url.startswith("data:image"):
                         img_url = ""
                     self.url_to_image[url] = img_url
@@ -95,7 +99,8 @@ class GuildDreamsScraper(BaseScraper):
                 price_element = self.driver.find_element(By.XPATH, price_selector)
                 price_text = price_element.text.strip()
                 pattern = r'\b\d+(?:[.,]\d{3})*(?:[.,]\d{2})?\b'
-                match = re.search(pattern, price_text.replace('.', '').replace(',', '.'))
+                match = re.search(pattern, price_text.replace(
+                    '.', '').replace(',', '.'))
                 data['price'] = match.group() if match else price_text
             else:
                 self.logger.warning("Price selector not defined")
@@ -117,7 +122,8 @@ class GuildDreamsScraper(BaseScraper):
         description_selector = category.selectors.get('description_selector')
         if description_selector:
             try:
-                description_element = self.driver.find_element(By.XPATH, description_selector)
+                description_element = self.driver.find_element(
+                    By.XPATH, description_selector)
                 data['description'] = description_element.text.strip()
             except Exception:
                 self.logger.warning("Description element not found")
@@ -141,7 +147,8 @@ class GuildDreamsScraper(BaseScraper):
                 self.driver.execute_script("arguments[0].scrollIntoView(true);", img_el)
                 time.sleep(1.5)
 
-                img_url = img_el.get_attribute("data-src") or img_el.get_attribute("src")
+                img_url = img_el.get_attribute(
+                    "data-src") or img_el.get_attribute("src")
                 if not img_url or img_url.startswith("data:image"):
                     self.logger.warning("Image fallback failed: placeholder found")
                     img_url = self.url_to_image.get(product_url, "")

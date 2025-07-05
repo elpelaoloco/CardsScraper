@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 import re
 import traceback
 
+
 class ElReinoScraper(BaseScraper):
     def navigate_to_category(self, category: Category) -> None:
         self.logger.info(f"Navigating to {category.url}")
@@ -20,7 +21,8 @@ class ElReinoScraper(BaseScraper):
 
         for container in containers:
             try:
-                a_tag = container.find_element(By.XPATH, ".//a[contains(@href, '/producto/')]")
+                a_tag = container.find_element(
+                    By.XPATH, ".//a[contains(@href, '/producto/')]")
                 url = a_tag.get_attribute("href")
                 name = a_tag.text.strip()
 
@@ -73,18 +75,18 @@ class ElReinoScraper(BaseScraper):
             data["img_url"] = ""
 
         return data
-    
+
     def extract_price(self) -> str:
         price_element = self.driver.find_elements(By.XPATH, "//p[@class='price']/span")
         if not price_element:
             self.logger.warning("Price element not found")
             return ""
-        
+
         span_descendants = price_element
 
         if len(span_descendants) == 1:
             text = span_descendants[0].get_attribute("innerText")
-            match =re.search(r'[\d.,]+', text)
+            match = re.search(r'[\d.,]+', text)
             if match:
                 print(f"Matched text: {match}")
                 matched_text = match.group(0)
@@ -96,7 +98,7 @@ class ElReinoScraper(BaseScraper):
             for span in span_descendants:
                 if 'actual' in span.get_attribute("innerText").lower():
                     text = span.get_attribute("innerText")
-                    match =re.search(r'[\d.,]+', text)
+                    match = re.search(r'[\d.,]+', text)
                     if match:
                         print(f"Matched text: {match}")
                         matched_text = match.group(0)

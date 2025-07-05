@@ -14,19 +14,20 @@ class HunterCardTCG(BaseScraper):
         self.logger.info(f"Navigating to {category.url}")
         self.driver.get(category.url)
         time.sleep(self.config.get('page_load_delay', 2))
-    
+
     def extract_product_urls(self, category: Category) -> List[Tuple[str, str]]:
         urls_selector = category.selectors.get('urls_selector')
-        
+
         if not self.wait_for_element(urls_selector):
-            self.logger.error(f"Couldn't find title elements for category {category.name}")
+            self.logger.error(
+                f"Couldn't find title elements for category {category.name}")
             return []
-        
+
         self.take_screenshot(f"{self.name}_{category.name}_listing.png")
-        
+
         elements = self.driver.find_elements(By.XPATH, urls_selector)
         self.logger.info(f"Found {len(elements)} title elements")
-        
+
         product_urls = []
         for element in elements:
             try:
@@ -38,24 +39,25 @@ class HunterCardTCG(BaseScraper):
                     product_urls.append((title, url))
             except Exception as e:
                 self.logger.warning(f"Error extracting element data: {e}")
-        
+
         return product_urls
 
     def process_product(self, product_url: str, category: Category) -> Dict[str, Any]:
         self.logger.info(f"Processing product: {product_url}")
         self.driver.get(product_url)
         time.sleep(self.config.get('page_load_delay', 2))
-        
+
         data = {}
 
         # Nombre
         try:
-            name_element = self.driver.find_element(By.XPATH, "//h1[contains(@class,'product_title')]")
+            name_element = self.driver.find_element(
+                By.XPATH, "//h1[contains(@class,'product_title')]")
             data["name"] = name_element.text.strip()
         except NoSuchElementException:
             self.logger.warning("Name element not found")
             data["name"] = "unknown"
-        
+
         # Precio
         try:
             price_selector = category.selectors.get('price_selector')
@@ -106,6 +108,5 @@ class HunterCardTCG(BaseScraper):
         except Exception as e:
             self.logger.warning(f"Image not found: {e}")
             data["img_url"] = ""
-
 
         return data

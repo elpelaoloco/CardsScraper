@@ -1,5 +1,6 @@
 import sys
 
+
 class Tee:
     def __init__(self, filename, mode="w"):
         self.file = open(filename, mode, encoding="utf-8")
