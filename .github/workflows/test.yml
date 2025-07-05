@@ -13,11 +13,11 @@ jobs:
     
     - name: Run tests with Docker Compose
       run: |
-        docker-compose -f docker-compose.test.yaml up --build --abort-on-container-exit
+        docker compose -f docker-compose.test.yaml up --build --abort-on-container-exit
         exit_code=$?
         docker-compose -f docker-compose.test.yaml down
         exit $exit_code
     
     - name: Clean up on failure
       if: failure()
-      run: docker-compose -f docker-compose.test.yaml down
+      run: docker compose -f docker-compose.test.yaml down
