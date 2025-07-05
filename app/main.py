@@ -11,6 +11,7 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 
+
 def consolidate_results(results: dict, output_path="data/consolidated_results.xlsx"):
     all_rows = []
 
@@ -28,12 +29,14 @@ def consolidate_results(results: dict, output_path="data/consolidated_results.xl
     os.makedirs("data", exist_ok=True)
     if not all_rows:
         logger.warning("No data found to export. Creating empty Excel file.")
-        empty_df = pd.DataFrame(columns=["name", "price", "url", "store", "category", "timestamp"])
+        empty_df = pd.DataFrame(
+            columns=["name", "price", "url", "store", "category", "timestamp"])
         empty_df.to_excel(output_path, index=False)
     else:
         df = pd.DataFrame(all_rows)
         df.to_excel(output_path, index=False)
         logger.info(f"Excel consolidado guardado en {output_path}")
+
 
 def main():
     config_path = "configs/scrapers_config.json"
@@ -49,6 +52,7 @@ def main():
         logger.error(f"Fatal error during scraping execution: {e}", exc_info=True)
 
     logger.info("Scraping completed. Results: %s", results.keys())
+
 
 if __name__ == "__main__":
     main()

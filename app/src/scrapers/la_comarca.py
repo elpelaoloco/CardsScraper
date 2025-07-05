@@ -4,6 +4,7 @@ from src.core.base_scraper import BaseScraper
 from src.core.category import Category
 from selenium.webdriver.common.by import By
 
+
 class LaComarcaScraper(BaseScraper):
     def navigate_to_category(self, category: Category) -> None:
         self.logger.info(f"Navigating to {category.url}")
@@ -20,11 +21,13 @@ class LaComarcaScraper(BaseScraper):
         for container in containers:
             try:
                 # URL del producto
-                a_tag = container.find_element(By.XPATH, ".//a[contains(@href, '/products/')]")
+                a_tag = container.find_element(
+                    By.XPATH, ".//a[contains(@href, '/products/')]")
                 url = a_tag.get_attribute("href")
 
                 # Nombre limpio
-                name_el = container.find_element(By.XPATH, ".//div[contains(@class, 'grid-view-item__title')]")
+                name_el = container.find_element(
+                    By.XPATH, ".//div[contains(@class, 'grid-view-item__title')]")
                 name = name_el.text.strip()
 
                 if not name or not url or "ULTIMAS UNIDADES" in name.upper():
@@ -36,7 +39,6 @@ class LaComarcaScraper(BaseScraper):
 
         return urls
 
-
     def process_product(self, product_url: str, category: Category) -> Dict[str, Any]:
         self.driver.get(product_url)
         time.sleep(self.config.get('page_load_delay', 2))
@@ -45,7 +47,8 @@ class LaComarcaScraper(BaseScraper):
 
         # Extraer nombre desde el h1
         try:
-            name_el = self.driver.find_element(By.XPATH, "//h1[contains(@class, 'product-single__title')]")
+            name_el = self.driver.find_element(
+                By.XPATH, "//h1[contains(@class, 'product-single__title')]")
             data["name"] = name_el.text.strip()
         except Exception as e:
             self.logger.warning(f"No name found: {e}")
@@ -73,12 +76,11 @@ class LaComarcaScraper(BaseScraper):
             try:
                 image_el = self.driver.find_element(By.XPATH, image_selector)
                 image_url = image_el.get_attribute("data-zoom")
-                data["img_url"] = "https:"+image_url
+                data["img_url"] = "https:" + image_url
             except Exception as e:
                 self.logger.warning(f"Image not found: {e}")
                 data["img_url"] = ""
         else:
             data["img_url"] = ""
-
 
         return data

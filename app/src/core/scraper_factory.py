@@ -7,6 +7,8 @@ from src.scrapers.third_impact import ThirdImpact
 from src.scrapers.la_comarca import LaComarcaScraper
 from src.scrapers.game_of_magic import GameOfMagicScraper
 from src.scrapers.el_reino import ElReinoScraper
+
+
 class ScraperFactory:
     @staticmethod
     def create_scraper(name: str, config: Dict[str, Any]) -> BaseScraper:
@@ -27,4 +29,3 @@ class ScraperFactory:
             return ElReinoScraper(name, config)
         else:
             raise ValueError(f"Unknown site type: {site_type}")
-
