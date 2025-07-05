@@ -2,3 +2,9 @@ selenium
 pandas
 pyyaml
 webdriver-manager
+pytest 
+pytest-cov 
+pytest-html 
+pytest-mock
+coverage
+pytest-xdist
