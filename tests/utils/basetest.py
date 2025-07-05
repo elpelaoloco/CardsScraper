@@ -10,8 +10,6 @@ class BaseScraperTest(unittest.TestCase):
     CATEGORY_KEY = "pokemon"
     CONFIG_PATH = os.path.join(os.path.dirname(__file__),"..", "..", "configs", "scrapers_config.json")
 
-
-
     @classmethod
     def setUpClass(cls):
         with open(cls.CONFIG_PATH, "r", encoding="utf-8") as f:

@@ -1,0 +1,51 @@
+# Usar imagen base de Python
+FROM python:3.11-slim
+
+# Instalar dependencias mínimas para Chromium
+RUN apt-get update && apt-get install -y \
+    chromium \
+    chromium-driver \
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -s /usr/bin/chromium /usr/bin/google-chrome
+
+# Establecer directorio de trabajo
+WORKDIR /app
+
+# Configurar PYTHONPATH para que Python encuentre los módulos
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+
+# Copiar archivos de dependencias (si existen)
+COPY requirements.txt* ./
+
+# Instalar dependencias si existe requirements.txt
+RUN if [ -f requirements.txt ]; then pip install --no-cache-dir -r requirements.txt; fi
+
+# Copiar el contenido de app/ directamente a /app/
+COPY app/ ./
+
+# Copiar carpeta de tests (si existe)
+COPY tests/ ./tests
+
+# Crear archivos __init__.py necesarios para imports
+RUN echo "# Tests module" > tests/__init__.py && \
+    echo "# Utils module" > tests/utils/__init__.py 2>/dev/null || mkdir -p tests/utils && echo "# Utils module" > tests/utils/__init__.py
+
+# Debug: verificar estructura y módulos
+RUN echo "=== ESTRUCTURA FINAL ===" && \
+    ls -la && \
+    echo "=== CONTENIDO DE tests/ ===" && \
+    ls -la tests/ && \
+    echo "=== CONTENIDO DE tests/utils/ ===" && \
+    ls -la tests/utils/ 2>/dev/null || echo "No existe tests/utils/" && \
+    echo "=== VERIFICAR __init__.py ===" && \
+    ls -la tests/__init__.py && \
+    ls -la tests/utils/__init__.py 2>/dev/null || echo "No existe tests/utils/__init__.py" && \
+    echo "=== PYTHONPATH ===" && \
+    echo $PYTHONPATH
+
+# Exponer puerto
+EXPOSE 8000
+
+# Establecer el entrypoint con PYTHONPATH configurado
+ENTRYPOINT ["python", "-m", "tests.run_all_tests"]

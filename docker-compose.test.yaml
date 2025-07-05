@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  app-test:
+    build: 
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: card-scraper-test
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ENV=testing
+    volumes:
+      - ./logs:/app/logs
+      - ./tests:/app/tests
+      - ./test-reports:/app/test-reports
+    # Comando para ejecutar tests
+    command: ["tests/", "-v"]
+    restart: "no"
+
+  # Servicio para desarrollo de tests (con shell interactivo)
+  test-dev:
+    build: 
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: card-scraper-test-dev
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ENV=testing
+    volumes:
+      - ./logs:/app/logs
+      - ./tests:/app/tests
+      - ./test-reports:/app/test-reports
+    command: /bin/bash
+    stdin_open: true
+    tty: true
+    profiles:
+      - dev
