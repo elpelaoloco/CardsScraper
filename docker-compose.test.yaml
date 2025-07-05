@@ -13,11 +13,9 @@ services:
       - ./logs:/app/logs
       - ./tests:/app/tests
       - ./test-reports:/app/test-reports
-    # Comando para ejecutar tests
     command: ["tests/", "-v"]
     restart: "no"
 
-  # Servicio para desarrollo de tests (con shell interactivo)
   test-dev:
     build: 
       context: .
