@@ -2,3 +2,4 @@ selenium
 pandas
 pyyaml
 webdriver-manager
+openpyxl

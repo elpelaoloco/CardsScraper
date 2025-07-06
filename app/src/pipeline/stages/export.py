@@ -11,24 +11,24 @@ from src.utils.save_results import save_dict_as_json
 
 class ExportStage(BaseStage):
     """Stage for exporting results to files"""
-    
+
     @property
     def stage_name(self) -> str:
         return "Export"
-    
+
     def execute(self, context: Dict[str, Any]) -> PipelineResult:
         """Export results to JSON and Excel files"""
         try:
             self.logger.info("Exporting results...")
-            
+
             config = context.get('config')
             results = context.get('scraper_results', {})
             consolidated_data = context.get('consolidated_data', [])
-            
+
             # Save JSON
             json_file = os.path.join(config.output_dir, config.json_filename)
             save_dict_as_json(results, json_file)
-            
+
             # Save Excel
             excel_file = os.path.join(config.output_dir, config.excel_filename)
             if not consolidated_data:
@@ -40,7 +40,7 @@ class ExportStage(BaseStage):
             else:
                 df = pd.DataFrame(consolidated_data)
                 df.to_excel(excel_file, index=False)
-            
+
             return PipelineResult(
                 success=True,
                 stage=PipelineStage.EXPORT,

@@ -9,11 +9,11 @@ from src.core.scraper_manager import ScraperManager
 
 class ScrapingStage(BaseStage):
     """Stage for executing all scrapers"""
-    
+
     @property
     def stage_name(self) -> str:
         return "Scraping"
-    
+
     def execute(self, context: Dict[str, Any]) -> PipelineResult:
         """Execute all scrapers"""
         try:
@@ -21,11 +21,11 @@ class ScrapingStage(BaseStage):
             config = context.get('config')
             manager = ScraperManager(config.config_path)
             results = manager.run_all()
-            
+
             # Store manager for cleanup stage
             context['manager'] = manager
             context['scraper_results'] = results
-            
+
             return PipelineResult(
                 success=True,
                 stage=PipelineStage.SCRAPING,
@@ -38,4 +38,3 @@ class ScrapingStage(BaseStage):
                 stage=PipelineStage.SCRAPING,
                 error=str(e)
             )
-        

@@ -36,4 +36,3 @@ class PipelineConfig:
     json_filename: str = "prod_result.json"
     excel_filename: str = "consolidated_results.xlsx"
     request_timeout: int = 30
-

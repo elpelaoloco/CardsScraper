@@ -8,11 +8,11 @@ from ..models import PipelineResult, PipelineStage
 
 class CleanupStage(BaseStage):
     """Stage for cleanup and final report generation"""
-    
+
     @property
     def stage_name(self) -> str:
         return "Cleanup"
-    
+
     def execute(self, context: Dict[str, Any]) -> PipelineResult:
         """Cleanup resources and generate final report"""
         try:
@@ -20,7 +20,7 @@ class CleanupStage(BaseStage):
             manager = context.get('manager')
             if manager:
                 manager.make_report()
-            
+
             return PipelineResult(
                 success=True,
                 stage=PipelineStage.CLEANUP,
