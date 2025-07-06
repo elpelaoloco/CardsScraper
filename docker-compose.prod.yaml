@@ -10,11 +10,12 @@ services:
       - "5000:5000"
     environment:
       - PYTHONUNBUFFERED=1
-      - API_URL=${API_URL}
       - PYTHONDONTWRITEBYTECODE=1
       - MALLOC_ARENA_MAX=2
       - PYTHONPATH=/app
       - CONFIG_PATH=configs/prod_config.json
+      - API_URL = https://te-odio-docker-back-git-main-teodiodockers-projects.vercel.app/
+
     volumes:
       - ./logs:/app/logs
       - /tmp:/tmp
