@@ -32,8 +32,8 @@ jobs:
           docker compose down || true
           
           # Clean up old images (optional)
-          echo "Cleaning up old images..."
-          docker system prune -f || true
+          #echo "Cleaning up old images..."
+          #docker system prune -f || true
           
           # Build and start containers
           echo "Building and starting containers..."
