@@ -2,9 +2,13 @@ version: '3.8'
 
 services:
   app:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile.prod
+      cache_from:
+        - card-scraper:latest
+        - python:3.11-slim
+    image: card-scraper:latest  
     container_name: card-scraper
     ports:
       - "5000:5000"
@@ -14,38 +18,28 @@ services:
       - MALLOC_ARENA_MAX=2
       - PYTHONPATH=/app
       - CONFIG_PATH=configs/prod_config.json
-      - API_URL = https://te-odio-docker-back-git-main-teodiodockers-projects.vercel.app/
-
+      - API_URL=https://te-odio-docker-back-git-main-teodiodockers-projects.vercel.app/
     volumes:
       - ./logs:/app/logs
       - /tmp:/tmp
     restart: unless-stopped
     extra_hosts:
       - "host.docker.internal:host-gateway"
-
-    
     deploy:
       resources:
         limits:
-          memory: 850M        
-          cpus: '0.8'         
+          memory: 850M
+          cpus: '0.8'
         reservations:
-          memory: 400M        
-          cpus: '0.2'         
-    
+          memory: 400M
+          cpus: '0.2'
     shm_size: 128mb
-    
     cap_add:
-      - SYS_ADMIN        
+      - SYS_ADMIN
     security_opt:
-      - seccomp:unconfined 
-    
-
-    
-
+      - seccomp:unconfined
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
-

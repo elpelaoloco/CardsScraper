@@ -13,7 +13,9 @@ WORKDIR /app
 COPY requirements.txt* ./
 RUN if [ -f requirements.txt ]; then pip install --no-cache-dir -r requirements.txt; fi
 COPY app/ ./
-ENV PYTHONPATH=/app
 
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
 EXPOSE 8000
 CMD ["sleep", "infinity"]
