@@ -4,7 +4,7 @@
       "type": "thirdimpact",
       "headless": true,
       "page_load_delay": 2,
-      "batch_size": 20,
+      "batch_size": 3,
       "categories": {
         "pokemon": {
           "url": "https://www.thirdimpact.cl/collection/pokemon-trading-card-game",
@@ -14,11 +14,12 @@
             "price_selector": ".//span[contains(@class, 'bs-product__final-price')]",
             "stock_selector": ".//p[contains(text(), 'Agotado')]",
             "description_selector": "//section[@class='bs-product-description']",
-            "title_selector": "",
+            "title_selector": "//h1[contains(@class, 'bs-product__title')]",
+            "image_selector": "//picture//img",
             "language_selector": "//div[@id='bs-product-form' and contains(@class, 'form')]//label"
           }
         },
-        "magic-the-gathering": {
+        "magic": {
           "url": "https://www.thirdimpact.cl/collection/magic-the-gathering",
           "selectors": {
             "product_selector": "//section[contains(@class, 'grid__item')]",
@@ -26,7 +27,8 @@
             "price_selector": ".//span[contains(@class, 'bs-product__final-price')]",
             "stock_selector": ".//p[contains(text(), 'Agotado')]",
             "description_selector": "//section[@class='bs-product-description']",
-            "title_selector": "",
+            "title_selector": "//h1[contains(@class, 'bs-product__title')]",
+            "image_selector": "//picture//img",
             "language_selector": "//div[@id='bs-product-form' and contains(@class, 'form')]//label"
           }
         }
@@ -50,7 +52,7 @@
             "language_selector": "//select[@data-name='Idioma']/option"
           }
         },
-        "yu-gi-oh": {
+        "yugioh": {
           "url": "https://carduniverse.cl/collections/yu-gi-oh",
           "selectors": {
             "product_selector": "//div[contains(@class, 'product-grid')]",
@@ -62,7 +64,7 @@
             "language_selector": "//select[@data-name='Idioma']/option"
           }
         },
-        "magic-the-gathering": {
+        "magic": {
           "url": "https://carduniverse.cl/collections/magic-the-gathering",
           "selectors": {
             "product_selector": "//div[contains(@class, 'product-grid')]",
@@ -81,42 +83,6 @@
       "headless": true,
       "page_load_delay": 2,
       "categories": {
-        "prismatic_evolutions": {
-          "url": "https://www.tiendalacomarca.cl/collections/prismatic-evolutions-singles",
-          "selectors": {
-            "product_selector": "//li[contains(@class, 'grid__item')]",
-            "urls_selector": ".//a[contains(@href, '/products/')]",
-            "price_selector": ".//span[contains(@class,'product-price__price')]",
-            "stock_selector": ".//p[contains(text(), 'Agotado')]",
-            "description_selector": "//div[contains(@class, 'product-description')]",
-            "title_selector": ".//div[contains(@class, 'product-title')]",
-            "language_selector": "//select[@data-name='Idioma']/option"
-          }
-        },
-        "twilight_masquerade": {
-          "url": "https://www.tiendalacomarca.cl/collections/singles-pokemon-twilight-masquerade",
-          "selectors": {
-            "product_selector": "//li[contains(@class, 'grid__item')]",
-            "urls_selector": ".//a[contains(@href, '/products/')]",
-            "price_selector": ".//span[contains(@class,'product-price__price')]",
-            "stock_selector": ".//p[contains(text(), 'Agotado')]",
-            "description_selector": "//div[contains(@class, 'product-description')]",
-            "title_selector": ".//div[contains(@class, 'product-title')]",
-            "language_selector": "//select[@data-name='Idioma']/option"
-          }
-        },
-        "temporal_forces": {
-          "url": "https://www.tiendalacomarca.cl/collections/singles-tef-temporal-forces",
-          "selectors": {
-            "product_selector": "//li[contains(@class, 'grid__item')]",
-            "urls_selector": ".//a[contains(@href, '/products/')]",
-            "price_selector": ".//span[contains(@class,'product-price__price')]",
-            "stock_selector": ".//p[contains(text(), 'Agotado')]",
-            "description_selector": "//div[contains(@class, 'product-description')]",
-            "title_selector": ".//div[contains(@class, 'product-title')]",
-            "language_selector": "//select[@data-name='Idioma']/option"
-          }
-        },
         "pokemon": {
           "url": "https://www.tiendalacomarca.cl/collections/pokemon-singles",
           "selectors": {
@@ -126,10 +92,13 @@
             "stock_selector": ".//p[contains(text(), 'Agotado')]",
             "description_selector": "//div[contains(@class, 'product-description')]",
             "title_selector": ".//div[contains(@class, 'product-title')]",
-            "language_selector": "//select[@data-name='Idioma']/option"
+            "language_selector": "//select[@data-name='Idioma']/option",
+            "image_selector": "//div[contains(@class, 'product-single__photo') and contains(@class, 'js-zoom-enabled')]"
+
+
           }
         },
-        "magic-the-gathering": {
+        "magic": {
           "url": "https://www.tiendalacomarca.cl/collections/mtg-singles",
           "selectors": {
             "product_selector": "//li[contains(@class, 'grid__item')]",
@@ -138,7 +107,9 @@
             "stock_selector": ".//p[contains(text(), 'Agotado')]",
             "description_selector": "//div[contains(@class, 'product-description')]",
             "title_selector": ".//div[contains(@class, 'product-title')]",
-            "language_selector": "//select[@data-name='Idioma']/option"
+            "language_selector": "//select[@data-name='Idioma']/option",
+            "image_selector": "//div[contains(@class, 'product-single__photo') and contains(@class, 'js-zoom-enabled')]"
+
           }
         }
       }
@@ -154,26 +125,29 @@
           "selectors": {
             "product_selector": "//div[contains(@class, 'bs-product')]",
             "urls_selector": ".//a[contains(@href, '/product/')]",
-            "price_selector": ".//div[contains(@class, 'bs-product-price')]//div[contains(@class, 'bs-product-final-price')]",
-            "title_selector": ".//h2[contains(@class, 'text-truncate')]"
+            "price_selector": "//span[contains(@class, 'h2')] | //div[contains(@class, 'h3')]",
+            "title_selector": "//h1[contains(@class, 'h2')]",
+            "image_selector": "//picture/img"
           }
         },
-        "magic-the-gathering": {
+        "magic": {
           "url": "https://www.guildreams.com/collection/magic-the-gathering",
           "selectors": {
             "product_selector": "//div[contains(@class, 'bs-product')]",
             "urls_selector": ".//a[contains(@href, '/product/')]",
-            "price_selector": ".//div[contains(@class, 'bs-product-price')]//div[contains(@class, 'bs-product-final-price')]",
-            "title_selector": ".//h2[contains(@class, 'text-truncate')]"
+            "price_selector": "//span[contains(@class, 'h2')] | //div[contains(@class, 'h3')]",
+            "title_selector": "//h1[contains(@class, 'h2')]",
+            "image_selector": "//picture/img"
           }
         },
-        "yu-gi-oh": {
+        "yugioh": {
           "url": "https://www.guildreams.com/collection/yu-gi-oh",
           "selectors": {
             "product_selector": "//div[contains(@class, 'bs-product')]",
             "urls_selector": ".//a[contains(@href, '/product/')]",
-            "price_selector": ".//div[contains(@class, 'bs-product-price')]//div[contains(@class, 'bs-product-final-price')]",
-            "title_selector": ".//h2[contains(@class, 'text-truncate')]"
+            "price_selector": "//span[contains(@class, 'h2')] | //div[contains(@class, 'h3')]",
+            "title_selector": "//h1[contains(@class, 'h2')]",
+            "image_selector": "//picture/img"
           }
         }
       }
@@ -190,16 +164,63 @@
             "product_selector": "//li[contains(@class, 'product') and contains(@class, 'type-product')]",
             "urls_selector": ".//a[contains(@href, '/producto/')]",
             "price_selector": ".//span[contains(@class, 'woocommerce-Price-amount')]",
-            "title_selector": ".//h2"
+            "title_selector": ".//h2",
+            "image_selector": "//img[contains(@class, 'wp-post-image')]"
+
           }
         },
-        "yu-gi-oh": {
+        "yugioh": {
           "url": "https://www.huntercardtcg.com/categoria-producto/yugioh/singles-yugioh/rarity-collection-ii/",
           "selectors": {
             "product_selector": "//li[contains(@class, 'product') and contains(@class, 'type-product')]",
             "urls_selector": ".//a[contains(@href, '/producto/')]",
             "price_selector": ".//span[contains(@class, 'woocommerce-Price-amount')]",
-            "title_selector": ".//h2"
+            "title_selector": ".//h2",
+            "image_selector": "//img[contains(@class, 'wp-post-image')]"
+
+          }
+        }
+      }
+    },
+    "game_of_magic": {
+      "type": "game_of_magic",
+      "headless": true,
+      "page_load_delay": 2,
+      "batch_size": 4,
+      "categories": {
+        "pokemon": {
+          "url": "https://www.gameofmagictienda.cl/collection/pokemon",
+          "selectors": {
+            "product_selector": "//div[contains(@class, 'bs-collection__product')]",
+            "urls_selector": ".//a[contains(@href, '/product/')]",
+            "price_selector": "//span[contains(@class, 'bs-product__final-price')]",
+            "title_selector": "//h1[contains(@class, 'bs-product__title')]",
+            "image_selector": "//div[contains(@class, 'bs-img-square')]//img[contains(@src, 'cloudfront')]"
+
+
+          }
+        },
+        "magic": {
+          "url": "https://www.gameofmagictienda.cl/collection/magic",
+          "selectors": {
+            "product_selector": "//div[contains(@class, 'bs-collection__product')]",
+            "urls_selector": ".//a[contains(@href, '/product/')]",
+            "price_selector": "//span[contains(@class, 'bs-product__final-price')]",
+            "title_selector": "//h1[contains(@class, 'bs-product__title')]",
+            "image_selector": "//div[contains(@class, 'bs-img-square')]//img[contains(@src, 'cloudfront')]"
+
+
+          }
+        },
+        "yugioh": {
+          "url": "https://www.gameofmagictienda.cl/collection/yugioh",
+          "selectors": {
+            "product_selector": "//div[contains(@class, 'bs-collection__product')]",
+            "urls_selector": ".//a[contains(@href, '/product/')]",
+            "price_selector": "//span[contains(@class, 'bs-product__final-price')]",
+            "title_selector": "//h1[contains(@class, 'bs-product__title')]",
+            "image_selector": "//div[contains(@class, 'bs-img-square')]//img[contains(@src, 'cloudfront')]"
+
           }
         }
       }
@@ -216,25 +237,31 @@
             "product_selector": "//div[contains(@class, 'wd-product')]",
             "urls_selector": ".//a[contains(@href, '/producto/')]",
             "price_selector": ".//ins//span[contains(@class, 'woocommerce-Price-amount')]",
-            "title_selector": ".//h3[contains(@class, 'wd-entities-title')]"
+            "title_selector": ".//h3[contains(@class, 'wd-entities-title')]",
+            "image_selector": "//figure[contains(@class, 'woocommerce-product-gallery__image')]//img"
+
           }
         },
-        "magic-the-gathering": {
+        "magic": {
           "url": "https://elreinodelosduelos.cl/categoria-producto/magic-the-gathering/",
           "selectors": {
             "product_selector": "//div[contains(@class, 'wd-product')]",
             "urls_selector": ".//a[contains(@href, '/producto/')]",
             "price_selector": ".//ins//span[contains(@class, 'woocommerce-Price-amount')]",
-            "title_selector": ".//h3[contains(@class, 'wd-entities-title')]"
+            "title_selector": ".//h3[contains(@class, 'wd-entities-title')]",
+            "image_selector": "//figure[contains(@class, 'woocommerce-product-gallery__image')]//img"
+
           }
         },
-        "yu-gi-oh": {
+        "yugioh": {
           "url": "https://elreinodelosduelos.cl/categoria-producto/yu-gi-oh/",
           "selectors": {
             "product_selector": "//div[contains(@class, 'wd-product')]",
             "urls_selector": ".//a[contains(@href, '/producto/')]",
             "price_selector": ".//ins//span[contains(@class, 'woocommerce-Price-amount')]",
-            "title_selector": ".//h3[contains(@class, 'wd-entities-title')]"
+            "title_selector": ".//h3[contains(@class, 'wd-entities-title')]",
+            "image_selector": "//figure[contains(@class, 'woocommerce-product-gallery__image')]//img"
+
           }
         }
       }

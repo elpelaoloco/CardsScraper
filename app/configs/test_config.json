@@ -1,46 +1,39 @@
 {
   "scrapers": {
-    "el_reino": {
-      "type": "el_reino",
+    "thirdimpact": {
+      "type": "thirdimpact",
       "headless": true,
       "page_load_delay": 2,
-      "batch_size": 3,
+      "batch_size": 1,
       "categories": {
         "pokemon": {
-          "url": "https://elreinodelosduelos.cl/categoria-producto/pokemon-tcg/sobres-pokemon-tcg/",
+          "url": "https://www.thirdimpact.cl/collection/pokemon-trading-card-game",
           "selectors": {
-            "product_selector": "//div[contains(@class, 'wd-product')]",
-            "urls_selector": ".//a[contains(@href, '/producto/')]",
-            "price_selector": ".//ins//span[contains(@class, 'woocommerce-Price-amount')]",
-            "title_selector": ".//h3[contains(@class, 'wd-entities-title')]",
-            "image_selector": "//figure[contains(@class, 'woocommerce-product-gallery__image')]//img"
-
+            "product_selector": "//section[contains(@class, 'grid__item')]",
+            "urls_selector": ".//a[contains(@class, 'bs-collection__product-info')]",
+            "price_selector": ".//span[contains(@class, 'bs-product__final-price')]",
+            "stock_selector": ".//p[contains(text(), 'Agotado')]",
+            "description_selector": "//section[@class='bs-product-description']",
+            "title_selector": "//h1[contains(@class, 'bs-product__title')]",
+            "image_selector": "//picture//img",
+            "language_selector": "//div[@id='bs-product-form' and contains(@class, 'form')]//label"
           }
         },
         "magic": {
-          "url": "https://elreinodelosduelos.cl/categoria-producto/magic-the-gathering/",
+          "url": "https://www.thirdimpact.cl/collection/magic-the-gathering",
           "selectors": {
-            "product_selector": "//div[contains(@class, 'wd-product')]",
-            "urls_selector": ".//a[contains(@href, '/producto/')]",
-            "price_selector": ".//ins//span[contains(@class, 'woocommerce-Price-amount')]",
-            "title_selector": ".//h3[contains(@class, 'wd-entities-title')]",
-            "image_selector": "//figure[contains(@class, 'woocommerce-product-gallery__image')]//img"
-
-          }
-        },
-        "yugioh": {
-          "url": "https://elreinodelosduelos.cl/categoria-producto/yu-gi-oh/",
-          "selectors": {
-            "product_selector": "//div[contains(@class, 'wd-product')]",
-            "urls_selector": ".//a[contains(@href, '/producto/')]",
-            "price_selector": ".//ins//span[contains(@class, 'woocommerce-Price-amount')]",
-            "title_selector": ".//h3[contains(@class, 'wd-entities-title')]",
-            "image_selector": "//figure[contains(@class, 'woocommerce-product-gallery__image')]//img"
-
+            "product_selector": "//section[contains(@class, 'grid__item')]",
+            "urls_selector": ".//a[contains(@class, 'bs-collection__product-info')]",
+            "price_selector": ".//span[contains(@class, 'bs-product__final-price')]",
+            "stock_selector": ".//p[contains(text(), 'Agotado')]",
+            "description_selector": "//section[@class='bs-product-description']",
+            "title_selector": "//h1[contains(@class, 'bs-product__title')]",
+            "image_selector": "//picture//img",
+            "language_selector": "//div[@id='bs-product-form' and contains(@class, 'form')]//label"
           }
         }
       }
     }
-
   }
+   
 }
