@@ -3,3 +3,4 @@ pandas
 pyyaml
 webdriver-manager
 openpyxl
+beautifulsoup4  

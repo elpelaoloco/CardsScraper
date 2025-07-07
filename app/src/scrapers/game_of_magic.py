@@ -4,6 +4,8 @@ from src.core.base_scraper import BaseScraper
 from src.core.category import Category
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
+from bs4 import BeautifulSoup
+import urllib.parse
 
 
 class GameOfMagicScraper(BaseScraper):
@@ -13,31 +15,47 @@ class GameOfMagicScraper(BaseScraper):
         time.sleep(self.config.get('page_load_delay', 2))
 
     def extract_product_urls(self, category: Category) -> List[Tuple[str, str]]:
-        containers_xpath = category.selectors.get('product_selector')
-        self.wait_for_element(containers_xpath)
 
-        containers = self.driver.find_elements(By.XPATH, containers_xpath)
-        self.logger.info(f"Found {len(containers)} product containers")
-        urls = []
+        try:
+            containers_selector = category.selectors.get('product_selector')
+            urls_selector = category.selectors.get('urls_selector')
 
-        for container in containers:
-            try:
-                urls_selector = category.selectors.get('urls_selector')
-                if not urls_selector:
-                    raise ValueError("No urls_selector defined in config")
+            if not containers_selector or not urls_selector:
+                raise ValueError("Missing required selectors in config")
 
-                a_tag = container.find_element(By.XPATH, urls_selector)
-                url = a_tag.get_attribute("href")
-                name = a_tag.get_attribute("title") or a_tag.text.strip()
+            page_source = self.driver.page_source
 
-                if url and name:
-                    urls.append((name, url))
-            except NoSuchElementException:
-                self.logger.warning("Product container doesn't contain a valid link")
-            except Exception as e:
-                self.logger.warning(f"Error processing product container: {e}")
+            soup = BeautifulSoup(page_source, 'html.parser')
 
-        return urls
+            containers = soup.select(containers_selector)
+            self.logger.info(f"Found {len(containers)} product containers")
+
+            urls = []
+            for container in containers:
+                try:
+                    a_tag = container.select_one(urls_selector)
+
+                    if not a_tag:
+                        continue
+
+                    url = a_tag.get("href")
+                    name = a_tag.get("title") or a_tag.get_text(strip=True)
+
+                    if url and name:
+                        if url.startswith('/'):
+                            base_url = self._get_base_url()
+                            url = urllib.parse.urljoin(base_url, url)
+
+                        urls.append((name.strip(), url.strip()))
+
+                except Exception as e:
+                    self.logger.warning(f"Error processing product container: {e}")
+
+            return urls
+
+        except Exception as e:
+            self.logger.error(f"Error extracting product URLs: {e}")
+            return []
 
     def process_product(self, product_url: str, category: Category) -> Dict[str, Any]:
         self.logger.info(f"Processing product: {product_url}")
@@ -84,3 +102,13 @@ class GameOfMagicScraper(BaseScraper):
             data["img_url"] = ""
 
         return data
+
+    def _get_base_url(self) -> str:
+        try:
+            if hasattr(self, 'driver') and self.driver:
+                current_url = self.driver.current_url
+                parsed = urllib.parse.urlparse(current_url)
+                return f"{parsed.scheme}://{parsed.netloc}"
+            return ''
+        except Exception:
+            return ''
