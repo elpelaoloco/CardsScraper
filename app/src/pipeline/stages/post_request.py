@@ -1,6 +1,4 @@
-"""
-POST request stage for the pipeline
-"""
+
 import requests
 import pandas as pd
 from typing import Any, Dict
@@ -10,7 +8,7 @@ from ..models import PipelineResult, PipelineStage
 
 
 class PostRequestStage(BaseStage):
-    """Stage for sending consolidated results via POST request"""
+
 
     @property
     def stage_name(self) -> str:

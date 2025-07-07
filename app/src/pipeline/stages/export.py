@@ -1,6 +1,4 @@
-"""
-Export stage for the pipeline
-"""
+
 import os
 import pandas as pd
 from typing import Any, Dict
@@ -10,14 +8,14 @@ from src.utils.save_results import save_dict_as_json
 
 
 class ExportStage(BaseStage):
-    """Stage for exporting results to files"""
+   
 
     @property
     def stage_name(self) -> str:
         return "Export"
 
     def execute(self, context: Dict[str, Any]) -> PipelineResult:
-        """Export results to JSON and Excel files"""
+        
         try:
             self.logger.info("Exporting results...")
 
@@ -25,11 +23,11 @@ class ExportStage(BaseStage):
             results = context.get('scraper_results', {})
             consolidated_data = context.get('consolidated_data', [])
 
-            # Save JSON
+           
             json_file = os.path.join(config.output_dir, config.json_filename)
             save_dict_as_json(results, json_file)
 
-            # Save Excel
+           
             excel_file = os.path.join(config.output_dir, config.excel_filename)
             if not consolidated_data:
                 self.logger.warning("No data found to export. Creating empty Excel file.")

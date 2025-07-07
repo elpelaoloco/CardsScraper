@@ -1,48 +1,258 @@
 {
-  "scrapers":{
-
+  "scrapers": {
+    "thirdimpact": {
+      "type": "thirdimpact",
+      "headless": true,
+      "page_load_delay": 2,
+      "batch_size": 1,
+      "categories": {
+        "pokemon": {
+          "url": "https://www.thirdimpact.cl/collection/pokemon-trading-card-game",
+          "selectors": {
+            "product_selector": "section.grid__item",
+            "urls_selector": "a.bs-collection__product-info",
+            "price_selector": "span.bs-product__final-price",
+            "stock_selector": "p:contains('Agotado')",
+            "description_selector": "section.bs-product-description",
+            "title_selector": "h1.bs-product__title",
+            "image_selector": "picture img",
+            "language_selector": "div#bs-product-form.form label"
+          }
+        },
+        "magic": {
+          "url": "https://www.thirdimpact.cl/collection/magic-the-gathering",
+          "selectors": {
+            "product_selector": "section.grid__item",
+            "urls_selector": "a.bs-collection__product-info",
+            "price_selector": "span.bs-product__final-price",
+            "stock_selector": "p:contains('Agotado')",
+            "description_selector": "section.bs-product-description",
+            "title_selector": "h1.bs-product__title",
+            "image_selector": "picture img",
+            "language_selector": "div#bs-product-form.form label"
+          }
+        }
+      }
+    },
+    "card_universe": {
+      "type": "card_universe",
+      "headless": true,
+      "page_load_delay": 2,
+      "batch_size": 1,
+      "categories": {
+        "pokemon": {
+          "url": "https://carduniverse.cl/collections/pokemon-tcg",
+          "selectors": {
+            "product_selector": "div.product-grid",
+            "urls_selector": "a.prod-th",
+            "price_selector": "div.price span.money",
+            "stock_selector": "p:contains('Agotado')",
+            "description_selector": "blockquote ul:first-child, div.product-description",
+            "title_selector": "a.prod-th span.product-title span.title",
+            "language_selector": "select[data-name='Idioma'] option"
+          }
+        },
+        "yugioh": {
+          "url": "https://carduniverse.cl/collections/yu-gi-oh",
+          "selectors": {
+            "product_selector": "div.product-grid",
+            "urls_selector": "a.prod-th",
+            "price_selector": "div.price span.money",
+            "stock_selector": "p:contains('Agotado')",
+            "description_selector": "blockquote ul:first-child, div.product-description",
+            "title_selector": "a.prod-th span.product-title span.title",
+            "language_selector": "select[data-name='Idioma'] option"
+          }
+        },
+        "magic": {
+          "url": "https://carduniverse.cl/collections/magic-the-gathering",
+          "selectors": {
+            "product_selector": "div.product-grid",
+            "urls_selector": "a.prod-th",
+            "price_selector": "div.price span.money",
+            "stock_selector": "p:contains('Agotado')",
+            "description_selector": "blockquote ul:first-child, div.product-description",
+            "title_selector": "a.prod-th span.product-title span.title",
+            "language_selector": "select[data-name='Idioma'] option"
+          }
+        }
+      }
+    },
+    "la_comarca": {
+      "type": "lacomarca",
+      "headless": true,
+      "page_load_delay": 2,
+      "batch_size": 1,
+      "categories": {
+        "pokemon": {
+          "url": "https://www.tiendalacomarca.cl/collections/pokemon-singles",
+          "selectors": {
+            "product_selector": "li.grid__item",
+            "urls_selector": "a[href*='/products/']",
+            "price_selector": "span.product-price__price",
+            "stock_selector": "p:contains('Agotado')",
+            "description_selector": "div.product-description",
+            "title_selector": "div.product-title",
+            "language_selector": "select[data-name='Idioma'] option",
+            "image_selector": "div.product-single__photo.js-zoom-enabled"
+          }
+        },
+        "magic": {
+          "url": "https://www.tiendalacomarca.cl/collections/mtg-singles",
+          "selectors": {
+            "product_selector": "li.grid__item",
+            "urls_selector": "a[href*='/products/']",
+            "price_selector": "span.product-price__price",
+            "stock_selector": "p:contains('Agotado')",
+            "description_selector": "div.product-description",
+            "title_selector": "div.product-title",
+            "language_selector": "select[data-name='Idioma'] option",
+            "image_selector": "div.product-single__photo.js-zoom-enabled"
+          }
+        }
+      }
+    },
+    "guild_dreams": {
+      "type": "guild_dreams",
+      "headless": true,
+      "page_load_delay": 2,
+      "batch_size": 1,
+      "categories": {
+        "pokemon": {
+          "url": "https://www.guildreams.com/collection/pokemon",
+          "selectors": {
+            "product_selector": "div.bs-product",
+            "urls_selector": "a[href*='/product/']",
+            "price_selector": "span.h2, div.h3",
+            "title_selector": "h1.h2",
+            "image_selector": "picture img"
+          }
+        },
+        "magic": {
+          "url": "https://www.guildreams.com/collection/magic-the-gathering",
+          "selectors": {
+            "product_selector": "div.bs-product",
+            "urls_selector": "a[href*='/product/']",
+            "price_selector": "span.h2, div.h3",
+            "title_selector": "h1.h2",
+            "image_selector": "picture img"
+          }
+        },
+        "yugioh": {
+          "url": "https://www.guildreams.com/collection/yu-gi-oh",
+          "selectors": {
+            "product_selector": "div.bs-product",
+            "urls_selector": "a[href*='/product/']",
+            "price_selector": "span.h2, div.h3",
+            "title_selector": "h1.h2",
+            "image_selector": "picture img"
+          }
+        }
+      }
+    },
+    "hunter_card_tcg": {
+      "type": "hunter_card_tcg",
+      "headless": true,
+      "page_load_delay": 2,
+      "batch_size": 1,
+      "categories": {
+        "pokemon": {
+          "url": "https://www.huntercardtcg.com/categoria-producto/cartas-sueltas/silver-tempest/",
+          "selectors": {
+            "product_selector": "li.product.type-product",
+            "urls_selector": "a[href*='/producto/']",
+            "price_selector": "span.woocommerce-Price-amount",
+            "title_selector": "h2",
+            "image_selector": "img.wp-post-image"
+          }
+        },
+        "yugioh": {
+          "url": "https://www.huntercardtcg.com/categoria-producto/yugioh/singles-yugioh/rarity-collection-ii/",
+          "selectors": {
+            "product_selector": "li.product.type-product",
+            "urls_selector": "a[href*='/producto/']",
+            "price_selector": "span.woocommerce-Price-amount",
+            "title_selector": "h2",
+            "image_selector": "img.wp-post-image"
+          }
+        }
+      }
+    },
     "game_of_magic": {
       "type": "game_of_magic",
       "headless": true,
       "page_load_delay": 2,
-      "batch_size": 10,
+      "batch_size": 1,
       "categories": {
         "pokemon": {
           "url": "https://www.gameofmagictienda.cl/collection/pokemon",
           "selectors": {
-            "product_selector": "div[class*='bs-collection__product']",
+            "product_selector": "div.bs-collection__product",
             "urls_selector": "a[href*='/product/']",
-            "price_selector": "//span[contains(@class, 'bs-product__final-price')]",
-            "title_selector": "//h1[contains(@class, 'bs-product__title')]",
-            "image_selector": "//div[contains(@class, 'bs-img-square')]//img[contains(@src, 'cloudfront')]"
-            
-            
+            "price_selector": "span.bs-product__final-price",
+            "title_selector": "h1.bs-product__title",
+            "image_selector": "div.bs-img-square img[src*='cloudfront']"
           }
         },
         "magic": {
           "url": "https://www.gameofmagictienda.cl/collection/magic",
           "selectors": {
-            "product_selector": "div[class*='bs-collection__product']",
+            "product_selector": "div.bs-collection__product",
             "urls_selector": "a[href*='/product/']",
-            "price_selector": "//span[contains(@class, 'bs-product__final-price')]",
-            "title_selector": "//h1[contains(@class, 'bs-product__title')]",
-            "image_selector": "//div[contains(@class, 'bs-img-square')]//img[contains(@src, 'cloudfront')]"
-            
-            
+            "price_selector": "span.bs-product__final-price",
+            "title_selector": "h1.bs-product__title",
+            "image_selector": "div.bs-img-square img[src*='cloudfront']"
           }
         },
         "yugioh": {
           "url": "https://www.gameofmagictienda.cl/collection/yugioh",
           "selectors": {
-            "product_selector": "div[class*='bs-collection__product']",
+            "product_selector": "div.bs-collection__product",
             "urls_selector": "a[href*='/product/']",
-            "price_selector": "//span[contains(@class, 'bs-product__final-price')]",
-            "title_selector": "//h1[contains(@class, 'bs-product__title')]",
-            "image_selector": "//div[contains(@class, 'bs-img-square')]//img[contains(@src, 'cloudfront')]"
-            
+            "price_selector": "span.bs-product__final-price",
+            "title_selector": "h1.bs-product__title",
+            "image_selector": "div.bs-img-square img[src*='cloudfront']"
+          }
+        }
+      }
+    },
+    "el_reino": {
+      "type": "el_reino",
+      "headless": true,
+      "page_load_delay": 2,
+      "batch_size": 1,
+      "categories": {
+        "pokemon": {
+          "url": "https://elreinodelosduelos.cl/categoria-producto/pokemon-tcg/sobres-pokemon-tcg/",
+          "selectors": {
+            "product_selector": "div.wd-product",
+            "urls_selector": "a[href*='/producto/']",
+            "price_selector": "ins span.woocommerce-Price-amount",
+            "title_selector": "h3.wd-entities-title",
+            "image_selector": "figure.woocommerce-product-gallery__image img"
+          }
+        },
+        "magic": {
+          "url": "https://elreinodelosduelos.cl/categoria-producto/magic-the-gathering/",
+          "selectors": {
+            "product_selector": "div.wd-product",
+            "urls_selector": "a[href*='/producto/']",
+            "price_selector": "ins span.woocommerce-Price-amount",
+            "title_selector": "h3.wd-entities-title",
+            "image_selector": "figure.woocommerce-product-gallery__image img"
+          }
+        },
+        "yugioh": {
+          "url": "https://elreinodelosduelos.cl/categoria-producto/yu-gi-oh/",
+          "selectors": {
+            "product_selector": "div.wd-product",
+            "urls_selector": "a[href*='/producto/']",
+            "price_selector": "ins span.woocommerce-Price-amount",
+            "title_selector": "h3.wd-entities-title",
+            "image_selector": "figure.woocommerce-product-gallery__image img"
           }
         }
       }
     }
   }
-  }
+}

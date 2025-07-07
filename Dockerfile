@@ -1,13 +1,12 @@
 FROM python:3.11-slim
 
+RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/*
+RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
 
-RUN apt-get update && apt-get install -y \
-    chromium \
-    chromium-driver \
-    --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/* \
-    && ln -s /usr/bin/chromium /usr/bin/google-chrome
-
+ENV LANG=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
+ENV PYTHONIOENCODING=utf-8
+ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 COPY requirements.txt* ./

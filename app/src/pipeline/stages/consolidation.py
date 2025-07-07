@@ -7,14 +7,13 @@ from ..models import PipelineResult, PipelineStage
 
 
 class ConsolidationStage(BaseStage):
-    """Stage for consolidating results from all scrapers"""
 
     @property
     def stage_name(self) -> str:
         return "Consolidation"
 
     def execute(self, context: Dict[str, Any]) -> PipelineResult:
-        """Consolidate results from all scrapers"""
+        
         try:
             self.logger.info("Consolidating results...")
             results = context.get('scraper_results', {})

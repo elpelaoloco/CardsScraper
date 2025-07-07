@@ -7,30 +7,27 @@ from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Tuple, Optional
 from src.core.category import Category
 from src.core.logger_factory import LoggerFactory
-from src.core.webdriver_factory import WebDriverFactory
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+from src.utils.css_contain_adapter import EnhancedSelector, StockChecker
+from src.utils.session import SimpleReliableSession
+from src.utils.session_html import RequestsHTMLSession
+from bs4 import BeautifulSoup
+import urllib.parse
 
 
 class BaseScraper(ABC):
 
     def __init__(self, name: str, config: Dict[str, Any]):
-
         self.name = name
         self.config = config
         self.logger = LoggerFactory.create_logger(f"scraper.{name}")
-        self.driver = None
+        self.session = None
         self.results = {}
         self.categories = self._initialize_categories(config.get('categories', {}))
         self.batch_size = None
         self.report = {}
 
-    def _initialize_categories(
-            self, categories_config: Dict[str, Any]) -> List[Category]:
+    def _initialize_categories(self, categories_config: Dict[str, Any]) -> List[Category]:
         categories = []
-
         for category_name, category_config in categories_config.items():
             url = category_config.get('url')
             selectors = category_config.get('selectors', {})
@@ -39,54 +36,117 @@ class BaseScraper(ABC):
                 categories.append(Category(category_name, url, selectors))
                 self.logger.info(f"Initialized category: {category_name}")
             else:
-                self.logger.warning(
-                    f"Skipping category {category_name}: No URL provided")
+                self.logger.warning(f"Skipping category {category_name}: No URL provided")
 
         return categories
 
     def setup(self) -> None:
         try:
             self.logger.info(f"Setting up {self.name} scraper")
-            headless = self.config.get('headless', True)
-            user_agent = self.config.get('user_agent')
-            window_size = self.config.get('window_size', "1920,1080")
             self.batch_size = self.config.get('batch_size', 4)
-
-            self.driver = WebDriverFactory.create_chrome_driver(
-                headless=headless,
-                user_agent=user_agent,
-                window_size=window_size
-            )
+            
+            self.session = RequestsHTMLSession()
+            
+            self.logger.info("SimpleReliableSession configured")
+            
         except Exception as e:
-            self.logger.error(f"Failed to set up WebDriver: {e}", exc_info=True)
+            self.logger.error(f"Failed to set up session: {e}", exc_info=True)
             raise
 
     def teardown(self) -> None:
-        if self.driver:
-            self.logger.info("Closing WebDriver")
-            self.driver.quit()
+        if self.session:
+            self.logger.info("Closing session")
+            self.session.close()
 
-    def wait_for_element(
-            self,
-            selector: str,
-            by: str = By.XPATH,
-            timeout: int = 10) -> bool:
+    def get_page(self, url: str,wait_for=None) -> BeautifulSoup:
+        try:
+            self.logger.info(f"Fetching URL: {url}")
+            soup = self.session.get(url,wait_for=wait_for)
+            return soup
+            
+        except Exception as e:
+            self.logger.error(f"Error fetching {url}: {e}")
+            raise
+
+    def find_elements(self, soup: BeautifulSoup, selector: str, selector_type: str = 'css') -> List:
+        try:
+            if selector_type == 'xpath':
+                css_selector = self._xpath_to_css(selector)
+                elements = EnhancedSelector.select(soup, css_selector)
+            else:
+                elements = EnhancedSelector.select(soup, selector)
+            
+            return elements
+        except Exception as e:
+            self.logger.warning(f"Error finding elements with selector {selector}: {e}")
+            return []
+
+    def find_element(self, soup: BeautifulSoup, selector: str, selector_type: str = 'css'):
+        elements = self.find_elements(soup, selector, selector_type)
+        return elements[0] if elements else None
+
+    def check_stock(self, soup: BeautifulSoup, stock_selector: str = None) -> str:
+        try:
+            if StockChecker.is_out_of_stock(soup, stock_selector):
+                return "out_of_stock"
+            else:
+                return "in_stock"
+        except Exception as e:
+            self.logger.warning(f"Error checking stock: {e}")
+            return "unknown"
+
+    def get_text(self, element) -> str:
+        if element:
+            text = element.get_text(strip=True)
+            text = re.sub(r'\s+', ' ', text)
+            return text.strip()
+        return ""
+
+    def get_attribute(self, element, attribute: str) -> str:
+        if element and hasattr(element, 'get'):
+            return element.get(attribute, '')
+        return ""
+
+    def _xpath_to_css(self, xpath: str) -> str:
+        if not xpath.startswith('//'):
+            return xpath
+        
+        conversions = [
+            (r'^//', ''),
+            (r'/(\w+)', r' > \1'),
+            (r"contains\(@class,\s*['\"]([^'\"]+)['\"]\)", r'[class*="\1"]'),
+            (r"contains\(@href,\s*['\"]([^'\"]+)['\"]\)", r'[href*="\1"]'),
+            (r"@class\s*=\s*['\"]([^'\"]+)['\"]", r'.\1'),
+            (r"@id\s*=\s*['\"]([^'\"]+)['\"]", r'#\1'),
+            (r'\[(\d+)\]', r':nth-child(\1)'),
+            (r'\s+', ' '),
+        ]
+        
+        css = xpath
+        for pattern, replacement in conversions:
+            css = re.sub(pattern, replacement, css)
+        
+        return css.strip() if css.strip() else '*'
+
+    def save_screenshot(self, soup: BeautifulSoup, filename: Optional[str] = None) -> str:
+        if not os.path.exists('screenshots'):
+            os.makedirs('screenshots')
+
+        if not filename:
+            filename = f"screenshots/{self.name}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
+        elif not filename.startswith('screenshots/'):
+            filename = f"screenshots/{filename}"
 
         try:
-            WebDriverWait(self.driver, timeout).until(
-                EC.presence_of_element_located((by, selector))
-            )
-            return True
-        except TimeoutException:
-            self.logger.warning(f"Timeout waiting for element {selector}")
-            return False
+            with open(filename, 'w', encoding='utf-8') as f:
+                f.write(str(soup.prettify()))
+            self.logger.info(f"HTML saved to {filename}")
+            return filename
+        except Exception as e:
+            self.logger.error(f"Failed to save HTML: {e}")
+            return ""
 
-    def save_results(
-            self,
-            category_name: Optional[str] = None,
-            filename: Optional[str] = None,
-            format: str = 'json') -> str:
-
+    def save_results(self, category_name: Optional[str] = None, filename: Optional[str] = None, format: str = 'json') -> str:
         if category_name and category_name in self.results:
             results_to_save = self.results[category_name]
         elif not category_name:
@@ -106,7 +166,9 @@ class BaseScraper(ABC):
 
         base_filename = f"{self.name}_{category_name if category_name else 'all'}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
         os.makedirs('data', exist_ok=True)
-        os.makedirs(f"data/{category_name}", exist_ok=True)
+        if category_name:
+            os.makedirs(f"data/{category_name}", exist_ok=True)
+        
         if not filename:
             if category_name:
                 filename = f"data/{category_name}/{base_filename}"
@@ -138,7 +200,6 @@ class BaseScraper(ABC):
             return ""
 
     def run(self) -> Dict[str, List[Dict[str, Any]]]:
-
         try:
             self.setup()
             self.logger.info(f"Starting {self.name} scraper")
@@ -148,49 +209,46 @@ class BaseScraper(ABC):
                 self.logger.info(f"Processing category: {category.name}")
 
                 self.results[category.name] = []
-                self.navigate_to_category(category)
+                soup = self.navigate_to_category(category)
 
-                product_urls = self.extract_product_urls(category)
+                product_urls = self.extract_product_urls(soup, category)
 
-                self.logger.info(
-                    f"Found {len(product_urls)} product URLs in category {category.name}")
+                self.logger.info(f"Found {len(product_urls)} product URLs in category {category.name}")
                 if len(product_urls) > self.batch_size:
-                    self.logger.info(
-                        f"Limiting to the first {self.batch_size} products")
+                    self.logger.info(f"Limiting to the first {self.batch_size} products")
                     product_urls = product_urls[:self.batch_size]
+                
                 product_count = len(product_urls)
                 processed_count = 0
+                
                 for idx, (product_name, product_url) in enumerate(product_urls):
-                    self.logger.info(
-                        f"Processing product {idx+1}/{len(product_urls)}: {product_name}")
+                    self.logger.info(f"Processing product {idx+1}/{len(product_urls)}: {product_name}")
                     product_data = self.process_product(product_url, category)
 
                     if product_data:
                         product_data['name'] = product_name
                         product_data['url'] = product_url
                         product_data['game'] = category.name
-                        product_data['timestamp'] = datetime.datetime.now().strftime(
-                            '%Y-%m-%d %H:%M:%S')
+                        product_data['timestamp'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         product_data['store'] = self.name
                         product_data['product_type'] = self.detect_type(product_name)
-                        # product_data['img_url']= ""
                         price = self.clean_price(product_data.get('price', 0))
                         product_data['price'] = price
                         product_data['min_price'] = price
                         if len(product_data.get('description', "")) > 500:
-                            self.logger.info(
-                                f"Truncating description for {product_name}")
+                            self.logger.info(f"Truncating description for {product_name}")
                             product_data['description'] = product_data['description'][:450] + "..."
                         processed_count += 1
                         self.results[category.name].append(product_data)
+                
                 process_report[category.name] = {
                     'total_products': product_count,
                     'processed_products': processed_count,
                     'success_rate': (processed_count / product_count) * 100 if product_count > 0 else 0
                 }
+            
             self.report = process_report
-            self.logger.info(
-                f"Scraping completed. Found items in {len(self.results)} categories.")
+            self.logger.info(f"Scraping completed. Found items in {len(self.results)} categories.")
             return self.results
         except Exception as e:
             self.logger.error(f"Error during scraping: {e}", exc_info=True)
@@ -202,10 +260,6 @@ class BaseScraper(ABC):
         return self.report
 
     def detect_type(self, product_name: str) -> str:
-        """
-        Detect the type of the category based on its name or the scraper name.
-        This can be overridden in subclasses for specific logic.
-        """
         name = product_name.lower()
         if "booster" in name:
             return "booster"
@@ -214,23 +268,22 @@ class BaseScraper(ABC):
         else:
             return "singles"
 
-    @abstractmethod
-    def navigate_to_category(self, category: Category) -> None:
+    def clean_price(self, raw_price):
+        if not raw_price:
+            return 0
+        match = re.findall(r'\d+', str(raw_price))
+        if not match:
+            return 0
+        return int(''.join(match))
 
+    @abstractmethod
+    def navigate_to_category(self, category: Category) -> BeautifulSoup:
         pass
 
     @abstractmethod
-    def extract_product_urls(self, category: Category) -> List[Tuple[str, str]]:
-
+    def extract_product_urls(self, soup: BeautifulSoup, category: Category) -> List[Tuple[str, str]]:
         pass
 
     @abstractmethod
     def process_product(self, product_url: str, category: Category) -> Dict[str, Any]:
-
         pass
-
-    def clean_price(self, raw_price):
-        match = re.findall(r'\d+', raw_price)
-        if not match:
-            return 0
-        return int(''.join(match))

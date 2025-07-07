@@ -4,7 +4,6 @@ from src.pipeline import ScraperPipeline, PipelineConfig
 
 
 def main():
-    """Main execution function"""
     base_url = os.getenv("API_URL", "http://localhost:8000/")
 
     config = PipelineConfig(
@@ -31,6 +30,11 @@ def main():
     print(f"Failed: {summary['failed_stages']}")
     print(f"Items processed: {summary['total_items_processed']}")
     print(f"Scrapers executed: {summary['scrapers_executed']}")
+    print(f"Scraping time: {summary.get('scraping_time', 'N/A'):.4f} seconds")
+    for report in summary['detailed_reports']:
+        print(f"Scraper: {report['scraper']}")
+        print(f"{' '* 4} Game: {report['game']}")
+        print(f"{' ' * 5} - Total Products: {report['report']['total_products']}  Processed Products:{report['report']['processed_products']}  Success Rate:{report['report']['success_rate']}")
     print("=" * 50)
 
 

@@ -17,10 +17,7 @@ from .stages.base import BaseStage
 
 
 class ScraperPipeline:
-    """
-    A pipeline for web scraping that processes data through multiple stages
-    and sends results via POST request.
-    """
+ 
 
     def __init__(self, config: PipelineConfig):
         self.config = config
@@ -29,7 +26,6 @@ class ScraperPipeline:
         self.stages = self._initialize_stages()
 
     def _initialize_stages(self) -> List[BaseStage]:
-        """Initialize all pipeline stages"""
         stage_classes = [
             InitializationStage,
             ScrapingStage,
@@ -42,12 +38,6 @@ class ScraperPipeline:
         return [stage_class(self.logger) for stage_class in stage_classes]
 
     def run(self) -> Dict[str, Any]:
-        """
-        Execute the complete pipeline
-
-        Returns:
-            Dict containing pipeline execution results
-        """
         pipeline_results = []
 
         for stage in self.stages:
@@ -59,7 +49,6 @@ class ScraperPipeline:
                 self.logger.info(f"✓ {stage.stage_name}: {result.message}")
             else:
                 self.logger.error(f"✗ {stage.stage_name}: {result.error}")
-                # Continue with next stage even if current fails (except for critical stages)
                 if result.stage in [PipelineStage.INIT, PipelineStage.SCRAPING]:
                     break
 
@@ -72,6 +61,8 @@ class ScraperPipeline:
 
         consolidated_data = self.context.get('consolidated_data', [])
         scraper_results = self.context.get('scraper_results', {})
+        reports = self.context.get('report', {})
+        scraping_time = self.context.get('scraping_time', None)
 
         summary = {
             "total_stages": len(pipeline_results),
@@ -79,6 +70,7 @@ class ScraperPipeline:
             "failed_stages": len(failed_stages),
             "total_items_processed": len(consolidated_data),
             "scrapers_executed": len(scraper_results),
+            "scraping_time": scraping_time,
             "stages_detail": [
                 {
                     "stage": r.stage.value,
@@ -87,6 +79,14 @@ class ScraperPipeline:
                     "error": r.error
                 }
                 for r in pipeline_results
+            ],
+            "detailed_reports": [ 
+                { 
+                    "scraper": name, 
+                    "game": category,
+                    "report": reports[name][category]
+                } 
+            for name in reports.keys() for category in reports[name].keys()
             ]
         }
 

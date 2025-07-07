@@ -8,11 +8,13 @@ services:
       - "5000:5000"
     environment:
       - PYTHONUNBUFFERED=1
+      - LANG=en_US.UTF-8
+      - LC_ALL=en_US.UTF-8
       - API_URL=${API_URL}
       - PYTHONDONTWRITEBYTECODE=1
       - MALLOC_ARENA_MAX=2
       - PYTHONPATH=/app
-      - CONFIG_PATH=configs/scrapers_config.json
+      - CONFIG_PATH=configs/test_config.json
     volumes:
       - ./logs:/app/logs
       - /tmp:/tmp

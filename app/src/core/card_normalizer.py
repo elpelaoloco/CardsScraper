@@ -16,7 +16,6 @@ def jaro_winkler_similarity(s1, s2, prefix_weight=0.1):
     if not s1 or not s2:
         return 0.0
 
-    # Calcular Jaro similarity
     def jaro_similarity(str1, str2):
         if str1 == str2:
             return 1.0
@@ -25,18 +24,15 @@ def jaro_winkler_similarity(s1, s2, prefix_weight=0.1):
         if len1 == 0 or len2 == 0:
             return 0.0
 
-        # Distancia máxima para considerar una coincidencia
         match_distance = max(len1, len2) // 2 - 1
         match_distance = max(0, match_distance)
 
-        # Arrays para marcar coincidencias
         str1_matches = [False] * len1
         str2_matches = [False] * len2
 
         matches = 0
         transpositions = 0
 
-        # Encontrar coincidencias
         for i in range(len1):
             start = max(0, i - match_distance)
             end = min(i + match_distance + 1, len2)

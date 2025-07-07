@@ -1,6 +1,8 @@
-selenium
+
 pandas
 pyyaml
-webdriver-manager
+
 openpyxl
 beautifulsoup4  
+chardet
+requests-html

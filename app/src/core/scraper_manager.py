@@ -83,8 +83,7 @@ class ScraperManager:
         results = self.scrapers[name].run()
         self.report[name] = self.scrapers[name].get_report()
 
-        # Guardar en estructura por juego y colección
-        self.save_results_per_category(name, results)
+        #self.save_results_per_category(name, results)
 
         return results
 
@@ -93,9 +92,12 @@ class ScraperManager:
         results = {}
 
         for name, scraper in self.scrapers.items():
+            
             results[name] = self.run_scraper(name)
-
         return results
+    
+    def get_report(self) -> Dict[str, Any]:
+        return self.report
 
     def make_report(self) -> None:
         self.logger.info("Generating report")

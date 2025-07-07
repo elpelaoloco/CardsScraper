@@ -1,37 +1,43 @@
 import time
 import re
 from typing import List, Tuple, Dict, Any
+from bs4 import BeautifulSoup
 from src.core.base_scraper import BaseScraper
 from src.core.category import Category
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
-from selenium.webdriver.remote.webelement import WebElement
 
 
 class ThirdImpact(BaseScraper):
-    def navigate_to_category(self, category: Category) -> None:
-
+    
+    def navigate_to_category(self, category: Category) -> BeautifulSoup:
         self.logger.info(f"Navigating to {category.url}")
-        self.driver.get(category.url)
-        time.sleep(self.config.get('page_load_delay', 2))
+        wait_for = category.selectors.get('urls_selector')
+        soup = self.get_page(category.url,wait_for=wait_for)
+        return soup
 
-    def extract_product_urls(self, category: Category) -> List[Tuple[str, str]]:
+    def extract_product_urls(self, soup: BeautifulSoup, category: Category) -> List[Tuple[str, str]]:
         urls_selector = category.selectors.get('urls_selector')
 
-        if not self.wait_for_element(urls_selector):
+        if not urls_selector:
             return []
 
-        elements = self.driver.find_elements(By.XPATH, urls_selector)
+        if urls_selector.startswith('//'):
+            elements = self.find_elements(soup, urls_selector, 'xpath')
+        else:
+            elements = self.find_elements(soup, urls_selector, 'css')
+
+        if not elements:
+            return []
 
         product_urls = []
         for element in elements:
             try:
-                title = element.text.strip()
-                url = element.get_attribute('href')
+                title = self.get_text(element)
+                url = self.get_attribute(element, 'href')
 
                 if title and url:
+                    if url.startswith('/'):
+                        base_url = category.url.split('/')[0] + '//' + category.url.split('/')[2]
+                        url = base_url + url
                     product_urls.append((title, url))
             except Exception as e:
                 self.logger.warning(f"Error extracting element data: {e}")
@@ -40,90 +46,87 @@ class ThirdImpact(BaseScraper):
 
     def process_product(self, product_url: str, category: Category) -> Dict[str, Any]:
         self.logger.info(f"Processing product: {product_url}")
-        self.driver.get(product_url)
-        time.sleep(self.config.get('page_load_delay', 2))
+        
+        try:
+            soup = self.get_page(product_url)
+        except Exception as e:
+            self.logger.error(f"Failed to load product page {product_url}: {e}")
+            return {}
 
         data = {}
 
+        
         price_selector = category.selectors.get('price_selector')
         if price_selector:
-            price_element = self.driver.find_element(By.XPATH, price_selector)
-            price_text = price_element.text.strip()
-            pattern = r'\b\d+(?:\.\d+)?\b'
-            match = re.search(pattern, price_text)
-            if match:
-                data['price'] = match.group()
-            else:
-                data['price'] = price_text
-                # Imagen
+            try:
+                if price_selector.startswith('//'):
+                    price_element = self.find_element(soup, price_selector, 'xpath')
+                else:
+                    price_element = self.find_element(soup, price_selector, 'css')
+                
+                if price_element:
+                    price_text = self.get_text(price_element)
+                    pattern = r'\b\d+(?:\.\d+)?\b'
+                    match = re.search(pattern, price_text)
+                    data['price'] = match.group() if match else price_text
+                else:
+                    data['price'] = ""
+            except Exception:
+                data['price'] = ""
+
+        
         try:
-            img_element = self.driver.find_element(By.XPATH, "//picture//img")
-            self.driver.execute_script(
-                "arguments[0].scrollIntoView(true);", img_element)
-            time.sleep(1)
-
-            img_url = img_element.get_attribute(
-                "data-src") or img_element.get_attribute("src")
-            if not img_url or img_url.startswith("data:image"):
-                self.logger.warning("Image fallback failed: placeholder found")
-                img_url = ""
-
-            data["img_url"] = img_url
+            img_element = soup.select_one("picture img")
+            if img_element:
+                img_url = img_element.get('data-src') or img_element.get('src')
+                if img_url and not img_url.startswith("data:image"):
+                    if img_url.startswith('/'):
+                        base_url = product_url.split('/')[0] + '//' + product_url.split('/')[2]
+                        img_url = base_url + img_url
+                    data["img_url"] = img_url
+                else:
+                    self.logger.warning("Image fallback failed: placeholder found")
+                    data["img_url"] = ""
+            else:
+                data["img_url"] = ""
         except Exception as e:
             self.logger.warning(f"Image element not found: {e}")
             data["img_url"] = ""
 
+        
         description_selector = category.selectors.get('description_selector')
         if description_selector:
-            description_element = self.driver.find_element(
-                By.XPATH, description_selector)
-            data['description'] = description_element.text.strip()
+            try:
+                if description_selector.startswith('//'):
+                    description_element = self.find_element(soup, description_selector, 'xpath')
+                else:
+                    description_element = self.find_element(soup, description_selector, 'css')
+                
+                if description_element:
+                    data['description'] = self.get_text(description_element)
+            except Exception:
+                pass
 
         language_selector = category.selectors.get('language_selector')
         if language_selector:
-            language_elements = self.driver.find_elements(By.XPATH, language_selector)
-            for language in language_elements:
-                text = language.text.strip()
-                data['language'] = self.process_language_text(text)
-            data['stock'] = self.get_stock_data(language_elements)
+            try:
+                if language_selector.startswith('//'):
+                    language_elements = self.find_elements(soup, language_selector, 'xpath')
+                else:
+                    language_elements = self.find_elements(soup, language_selector, 'css')
+                
+                if language_elements:
+                    
+                    first_lang = self.get_text(language_elements[0])
+                    data['language'] = first_lang if first_lang else "unknown"
+                    
+                    
+                    data['stock'] = len(language_elements) > 0
+                else:
+                    data['language'] = "Español"  
+                    data['stock'] = True
+            except Exception:
+                data['language'] = "unknown"
+                data['stock'] = False
+
         return data
-
-    def process_language_text(self, text: str) -> str:
-        if text:
-            text = text.strip()
-            return text
-        else:
-            return "unknown"
-
-    def get_stock_data(self, language_elements: List[WebElement]) -> Dict[str, bool]:
-        stock_by_language = {}
-        if len(language_elements) == 0:
-            default_language_stock = self.get_stock_for_default_language()
-            stock_by_language["Español"] = default_language_stock
-            return stock_by_language
-
-        for language in language_elements:
-            text = language.text.strip()
-            if text:
-                stock_by_language[text] = self.get_stock_by_border_style(language)
-            else:
-                stock_by_language["unknown"] = False
-        return stock_by_language
-
-    def get_stock_for_default_language(self) -> str:
-        wait = WebDriverWait(self.driver, 10)
-        stock_elements = wait.until(EC.presence_of_all_elements_located(
-            (By.XPATH, "//table/tbody/tr/td[2]")))
-        for stock in stock_elements:
-            text = stock.text.strip()
-
-            if text != "Agotado":
-                return True
-        return False
-
-    def get_stock_by_border_style(self, element: WebElement) -> bool:
-        border_style = element.value_of_css_property("border-style")
-        if border_style != "dashed":
-            return True
-        else:
-            return False

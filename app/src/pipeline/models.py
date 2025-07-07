@@ -1,13 +1,9 @@
-"""
-Data models and enums for the scraper pipeline
-"""
 from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List, Optional, Any
 
 
 class PipelineStage(Enum):
-    """Pipeline stages for tracking execution"""
     INIT = "initialization"
     SCRAPING = "scraping"
     CONSOLIDATION = "consolidation"
