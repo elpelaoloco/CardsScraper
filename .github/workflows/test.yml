@@ -1,4 +1,4 @@
-name: Docker Tests
+name: Python Tests
 
 on:
   pull_request:
@@ -7,17 +7,21 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Run tests with Docker Compose
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11' 
+
+    - name: Install dependencies
       run: |
-        docker compose -f docker-compose.test.yaml up --build --abort-on-container-exit
-        exit_code=$?
-        docker compose -f docker-compose.test.yaml down
-        exit $exit_code
-    
-    - name: Clean up on failure
-      if: failure()
-      run: docker compose -f docker-compose.test.yaml down
+        python -m pip install --upgrade pip
+        pip install -r requirements-test.txt
+
+    - name: Run tests
+      run: |
+        pytest
