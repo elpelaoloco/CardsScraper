@@ -23,7 +23,6 @@ class ThirdImpact(BaseScraper):
         if not self.wait_for_element(urls_selector):
             return []
 
-
         elements = self.driver.find_elements(By.XPATH, urls_selector)
 
         product_urls = []

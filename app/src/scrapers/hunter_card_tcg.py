@@ -23,7 +23,6 @@ class HunterCardTCG(BaseScraper):
                 f"Couldn't find title elements for category {category.name}")
             return []
 
-
         elements = self.driver.find_elements(By.XPATH, urls_selector)
         self.logger.info(f"Found {len(elements)} title elements")
 
@@ -48,7 +47,6 @@ class HunterCardTCG(BaseScraper):
 
         data = {}
 
-        
         try:
             name_element = self.driver.find_element(
                 By.XPATH, "//h1[contains(@class,'product_title')]")
@@ -57,7 +55,6 @@ class HunterCardTCG(BaseScraper):
             self.logger.warning("Name element not found")
             data["name"] = "unknown"
 
-        
         try:
             price_selector = category.selectors.get('price_selector')
             price_element = self.driver.find_element(By.XPATH, price_selector)
@@ -69,7 +66,6 @@ class HunterCardTCG(BaseScraper):
             self.logger.warning("Price element not found")
             data["price"] = "unknown"
 
-        
         try:
             stock_selector = category.selectors.get("stock_selector")
             if stock_selector:
@@ -78,7 +74,6 @@ class HunterCardTCG(BaseScraper):
         except NoSuchElementException:
             pass
 
-        
         try:
             desc_selector = category.selectors.get("description_selector")
             if desc_selector:
@@ -87,7 +82,6 @@ class HunterCardTCG(BaseScraper):
         except NoSuchElementException:
             pass
 
-        
         try:
             lang_selector = category.selectors.get("language_selector")
             if lang_selector:

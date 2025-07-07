@@ -19,40 +19,40 @@ class GameOfMagicScraper(BaseScraper):
         try:
             containers_selector = category.selectors.get('product_selector')
             urls_selector = category.selectors.get('urls_selector')
-            
+
             if not containers_selector or not urls_selector:
                 raise ValueError("Missing required selectors in config")
-            
+
             page_source = self.driver.page_source
-            
+
             soup = BeautifulSoup(page_source, 'html.parser')
-            
+
             containers = soup.select(containers_selector)
             self.logger.info(f"Found {len(containers)} product containers")
-            
+
             urls = []
             for container in containers:
                 try:
                     a_tag = container.select_one(urls_selector)
-                    
+
                     if not a_tag:
                         continue
-                    
+
                     url = a_tag.get("href")
                     name = a_tag.get("title") or a_tag.get_text(strip=True)
-                    
+
                     if url and name:
                         if url.startswith('/'):
                             base_url = self._get_base_url()
                             url = urllib.parse.urljoin(base_url, url)
-                        
+
                         urls.append((name.strip(), url.strip()))
-                        
+
                 except Exception as e:
                     self.logger.warning(f"Error processing product container: {e}")
-            
+
             return urls
-        
+
         except Exception as e:
             self.logger.error(f"Error extracting product URLs: {e}")
             return []
@@ -102,6 +102,7 @@ class GameOfMagicScraper(BaseScraper):
             data["img_url"] = ""
 
         return data
+
     def _get_base_url(self) -> str:
         try:
             if hasattr(self, 'driver') and self.driver:

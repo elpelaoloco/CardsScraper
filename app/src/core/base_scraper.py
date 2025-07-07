@@ -66,7 +66,6 @@ class BaseScraper(ABC):
             self.logger.info("Closing WebDriver")
             self.driver.quit()
 
-
     def wait_for_element(
             self,
             selector: str,
