@@ -42,7 +42,7 @@ class RequestsHTMLSession:
             if self.playwright is not None:
                 self._cleanup_playwright()
                 self._log("Reiniciando browser por límite de páginas")
-            
+
             self._log("Inicializando Playwright...")
             self.playwright = sync_playwright().start()
 
@@ -98,14 +98,14 @@ class RequestsHTMLSession:
 
             self._setup_resource_blocking()
             self._inject_stealth_scripts()
-            
+
             self._page_count = 0
             self._log("Playwright inicializado")
 
     def _setup_resource_blocking(self):
-        self.context.route("**/*.{png,jpg,jpeg,gif,svg,webp,ico,bmp,tiff}", 
-                          lambda route: route.abort())
-        
+        self.context.route("**/*.{png,jpg,jpeg,gif,svg,webp,ico,bmp,tiff}",
+                           lambda route: route.abort())
+
         blocking_domains = [
             "**/google-analytics.com/**",
             "**/googletagmanager.com/**",
@@ -121,7 +121,7 @@ class RequestsHTMLSession:
             "**/zendesk.com/**",
             "**/intercom.io/**"
         ]
-        
+
         for domain in blocking_domains:
             self.context.route(domain, lambda route: route.abort())
 
@@ -130,21 +130,16 @@ class RequestsHTMLSession:
         Object.defineProperty(navigator, 'webdriver', {
             get: () => undefined,
         });
-        
         Object.defineProperty(navigator, 'plugins', {
             get: () => [1, 2, 3, 4, 5],
         });
-        
         Object.defineProperty(navigator, 'languages', {
             get: () => ['es-ES', 'es', 'en'],
         });
-        
         window.chrome = {
             runtime: {},
         };
-        
         delete navigator.__proto__.webdriver;
-        
         Object.defineProperty(navigator, 'plugins', {
             get: () => [
                 {
@@ -157,7 +152,7 @@ class RequestsHTMLSession:
             ]
         });
         """
-        
+
         self.context.add_init_script(stealth_script)
 
     def get(self, url, wait_for=None, render_js=True, wait_time=2):
@@ -191,7 +186,7 @@ class RequestsHTMLSession:
 
     def _get_with_requests(self, url):
         import requests
-        
+
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
@@ -201,7 +196,7 @@ class RequestsHTMLSession:
             'Connection': 'keep-alive',
             'Upgrade-Insecure-Requests': '1',
         }
-        
+
         response = requests.get(url, timeout=30, headers=headers)
         response.raise_for_status()
         return BeautifulSoup(response.content, 'html.parser')
@@ -218,13 +213,13 @@ class RequestsHTMLSession:
             page.set_default_navigation_timeout(30000)
 
             self._log(f"Navegando a: {url}")
-            
+
             try:
                 response = page.goto(url, wait_until='domcontentloaded', timeout=30000)
-                
+
                 if response and response.status >= 400:
                     raise Exception(f"HTTP {response.status}")
-                    
+
             except Exception as e:
                 if "timeout" in str(e).lower():
                     self._log("Timeout en navegación, intentando con networkidle...")
@@ -244,7 +239,7 @@ class RequestsHTMLSession:
             try:
                 page.evaluate("window.scrollTo(0, 300)")
                 page.wait_for_timeout(1000)
-            except:
+            except Exception:
                 pass
 
             content = page.content()
@@ -260,7 +255,7 @@ class RequestsHTMLSession:
             if page:
                 try:
                     page.close()
-                except:
+                except Exception as e:
                     pass
 
     def _apply_rate_limit(self):
@@ -314,8 +309,8 @@ class LightweightPlaywrightSession(RequestsHTMLSession):
                 self._log("Intentando con requests simple...")
                 soup = self._get_with_requests(url)
 
-                if (len(soup.get_text()) > 1000 and 
-                    soup.find_all(['div', 'article', 'section', 'main'])):
+                if (len(soup.get_text()) > 1000
+                        and soup.find_all(['div', 'article', 'section', 'main'])):
                     self._log("Contenido obtenido exitosamente con requests")
                     return soup
                 else:
@@ -333,16 +328,16 @@ class LightweightPlaywrightSession(RequestsHTMLSession):
             {'render_js': True, 'wait_time': 1, 'description': 'playwright rápido'},
             {'render_js': True, 'wait_time': 3, 'description': 'playwright lento'},
         ]
-        
+
         for i, strategy in enumerate(strategies):
             try:
                 self._log(f"Estrategia {i+1}: {strategy['description']}")
-                
+
                 if strategy['render_js']:
                     return self.get(url, **{k: v for k, v in strategy.items() if k != 'description'})
                 else:
                     return self._get_with_requests(url)
-                    
+
             except Exception as e:
                 self._log(f"Estrategia {i+1} falló: {e}")
                 if i < len(strategies) - 1:

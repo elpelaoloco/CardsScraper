@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from src.pipeline import ScraperPipeline, PipelineConfig
 load_dotenv()
 
+
 def main():
     base_url = os.getenv("API_URL", "https://te-odio-docker-back-git-main-teodiodockers-projects.vercel.app/")
 
