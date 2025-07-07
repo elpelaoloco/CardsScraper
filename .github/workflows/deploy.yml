@@ -17,8 +17,8 @@ jobs:
         script: |
           cd /home/ubuntu/CardScraper || {
             echo "First time - cloning repository"
-            git clone https://github.com/${{ github.repository }}.git cardscraper
-            cd cardscraper
+            git clone https://github.com/${{ github.repository }}.git CardScraper
+            cd CardScraper
           }
           
           echo "Updating code..."
