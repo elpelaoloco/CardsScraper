@@ -3,10 +3,12 @@ import time
 import random
 from bs4 import BeautifulSoup
 import os
+import pyppeteer
 
 class RequestsHTMLSession:
     def __init__(self):
         self._setup_encoding()
+        self._patch_pyppeteer()
         self.session = HTMLSession()
         self._setup_session()
         self.last_request_time = 0
@@ -15,6 +17,46 @@ class RequestsHTMLSession:
         os.environ['PYTHONIOENCODING'] = 'utf-8'
         os.environ['LANG'] = 'en_US.UTF-8'
         os.environ['LC_ALL'] = 'en_US.UTF-8'
+    
+    def _patch_pyppeteer(self):
+        """Parche para pyppeteer con argumentos seguros para servidores"""
+        original_launch = pyppeteer.launch
+
+        async def safe_launch(**kwargs):
+            safe_args = [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-accelerated-2d-canvas',
+                '--disable-gpu',
+                '--disable-extensions',
+                '--disable-plugins',
+                '--disable-images',
+                '--window-size=1920,1080',
+                '--single-process',
+                '--no-zygote',
+                '--disable-dev-tools',
+                '--disable-background-timer-throttling',
+                '--disable-backgrounding-occluded-windows',
+                '--disable-renderer-backgrounding',
+                '--memory-pressure-off',
+                '--max_old_space_size=4096',
+                '--disable-web-security',
+                '--disable-features=TranslateUI',
+                '--disable-ipc-flooding-protection'
+            ]
+            
+            existing_args = kwargs.get('args', [])
+            kwargs['args'] = safe_args + existing_args
+            
+            kwargs['headless'] = True
+            kwargs['handleSIGINT'] = False
+            kwargs['handleSIGTERM'] = False
+            kwargs['handleSIGHUP'] = False
+            
+            return await original_launch(**kwargs)
+
+        pyppeteer.launch = safe_launch
     
     def _setup_session(self):
         user_agents = [
@@ -55,10 +97,19 @@ class RequestsHTMLSession:
                     render_params = {
                         'timeout': 20,
                         'wait': wait_time,
-                        'sleep': 1
+                        'sleep': 1,
+                        'keep_page': True,
+                        'reload': False
                     }
                     
-                    r.html.render(**render_params)
+                    try:
+                        r.html.render(**render_params)
+                    except Exception as e:
+                        print(f"Error rendering page: {e}")
+                        os.system("pkill -f chrome 2>/dev/null || true")
+                        if attempt == max_attempts - 1:
+                            raise
+                        continue
                     
                     if wait_for:
                         if not self._wait_for_selector(r.html, wait_for):
@@ -72,6 +123,9 @@ class RequestsHTMLSession:
                     continue
                 
             except Exception as e:
+                print(f"Attempt {attempt + 1} failed: {e}")
+                os.system("pkill -f chrome 2>/dev/null || true")
+                
                 if attempt == max_attempts - 1:
                     raise
                 continue
@@ -135,4 +189,9 @@ class RequestsHTMLSession:
     
     def close(self):
         if self.session:
-            self.session.close()
+            try:
+                self.session.close()
+            except:
+                pass
+            
+        os.system("pkill -f chrome 2>/dev/null || true")
