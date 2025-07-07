@@ -1,7 +1,4 @@
 #!/usr/bin/env python3
-"""
-Professional Test Runner using pytest with coverage
-"""
 
 import subprocess
 import sys
@@ -11,21 +8,16 @@ from datetime import datetime
 
 
 def run_pytest_command(args):
-    """Build and execute pytest command."""
     cmd = ["python", "-m", "pytest"]
 
-    # Add verbosity
     if args.verbose:
         cmd.append("-v")
 
-    # Add output capture
     if args.s:
         cmd.append("-s")
 
-    # Add traceback style
     cmd.extend(["--tb", args.tb])
 
-    # Add coverage by default
     if not args.no_coverage:
         cmd.extend([
             "--cov=src",
@@ -35,7 +27,6 @@ def run_pytest_command(args):
             f"--cov-fail-under={args.coverage_threshold}"
         ])
 
-    # Test selection
     if args.unit_only:
         cmd.extend(["-m", "unit"])
     elif args.integration_only:
@@ -43,34 +34,27 @@ def run_pytest_command(args):
     elif args.markers:
         cmd.extend(["-m", args.markers])
 
-    # Include slow tests if requested
     if args.include_slow:
         cmd.append("--runslow")
 
-    # Add test paths or check for tests directory
     if args.test_paths:
         cmd.extend(args.test_paths)
     else:
-        # Check if tests directory exists
         tests_dir = Path("tests")
         if tests_dir.exists():
             cmd.append("tests/")
         else:
-            # Look for test files in current directory
             test_files = list(Path(".").glob("test_*.py"))
             if test_files:
                 cmd.extend([str(f) for f in test_files])
             else:
-                # No tests found, create a placeholder
-                print("⚠️  No tests directory or test files found!")
-                print("   Creating tests directory structure...")
                 tests_dir.mkdir(exist_ok=True)
                 (tests_dir / "__init__.py").touch()
+    return cmd
 
 
 def main():
-    """Main entry point."""
-    parser = argparse.ArgumentParser(description="Professional Test Runner")
+    parser = argparse.ArgumentParser(description="Test Runner")
 
     parser.add_argument("test_paths", nargs="*", help="Specific test paths")
     parser.add_argument("--unit-only", action="store_true", help="Run only unit tests")
@@ -98,7 +82,7 @@ def main():
 
     args = parser.parse_args()
 
-    print("🧪 PROFESSIONAL TEST RUNNER")
+    print("TEST RUNNER")
     print("=" * 60)
     print(f"Timestamp: {datetime.now().isoformat()}")
     print(f"Current working directory: {Path.cwd()}")
@@ -120,7 +104,6 @@ def main():
     except Exception as e:
         print(f"❌ Error running tests: {e}")
         return 1
-
 
 if __name__ == "__main__":
     sys.exit(main())

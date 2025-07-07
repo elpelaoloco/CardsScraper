@@ -1,9 +1,9 @@
 
 pandas
 pyyaml
-
 openpyxl
 beautifulsoup4  
 chardet
-requests-html
-lxml_html_clean
+playwright
+requests
+dotenv

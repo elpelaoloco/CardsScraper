@@ -26,21 +26,6 @@ jobs:
           # Update code
           echo "Updating code..."
           git pull origin main
+
+          pip install -r requirements.txt
           
-          # Stop existing containers
-          echo "Stopping containers..."
-          docker compose down || true
-          
-          # Clean up old images (optional)
-          #echo "Cleaning up old images..."
-          #docker system prune -f || true
-          
-          # Build and start containers
-          echo "Building and starting containers..."
-          docker compose -f docker-compose.prod.yaml up -d --build
-          
-          # Check container status
-          echo "Checking container status..."
-          docker compose ps
-          
-          echo "Deployment completed!"
