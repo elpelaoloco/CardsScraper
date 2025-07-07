@@ -15,7 +15,7 @@ jobs:
         username: ubuntu
         key: ${{ secrets.AWS_KEY }}
         script: |
-          cd /home/ubuntu/CardScraper || {
+          cd CardScraper || {
             echo "First time - cloning repository"
             git clone https://github.com/${{ github.repository }}.git CardScraper
             cd CardScraper
