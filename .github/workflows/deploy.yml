@@ -17,31 +17,18 @@ jobs:
         username: ubuntu
         key: ${{ secrets.AWS_KEY }}
         script: |
-          # Navigate to project directory
+
           cd /home/ubuntu/my-project || {
             echo "First time - cloning repository"
             git clone https://github.com/${{ github.repository }}.git my-project
             cd my-project
           }
           
-          # Update code
+
           echo "Updating code..."
           git pull origin main
+
+
+          pip install -r requirements.txt
           
-          # Stop existing containers
-          echo "Stopping containers..."
-          docker compose down || true
-          
-          # Clean up old images (optional)
-          #echo "Cleaning up old images..."
-          #docker system prune -f || true
-          
-          # Build and start containers
-          echo "Building and starting containers..."
-          docker compose -f docker-compose.prod.yaml up -d --build
-          
-          # Check container status
-          echo "Checking container status..."
-          docker compose ps
-          
-          echo "Deployment completed!"
+

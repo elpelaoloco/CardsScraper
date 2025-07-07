@@ -17,3 +17,5 @@ reports/
 reports/**
 
 .env
+venv
+venv/
