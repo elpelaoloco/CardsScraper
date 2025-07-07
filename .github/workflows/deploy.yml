@@ -1,9 +1,7 @@
 name: Deploy to EC2
-
 on:
   push:
     branches: [ main ]
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -17,19 +15,13 @@ jobs:
         username: ubuntu
         key: ${{ secrets.AWS_KEY }}
         script: |
-
-          cd /home/ubuntu/my-project || {
+          cd /home/ubuntu/CardScraper || {
             echo "First time - cloning repository"
-            git clone https://github.com/${{ github.repository }}.git my-project
-            cd my-project
+            git clone https://github.com/${{ github.repository }}.git cardscraper
+            cd cardscraper
           }
           
-
           echo "Updating code..."
           git pull origin main
           source venv/bin/activate
-
-
           pip install -r requirements.txt
-          
-
