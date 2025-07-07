@@ -1,84 +1,64 @@
-from requests_html import HTMLSession
 import time
 import random
 from bs4 import BeautifulSoup
 import os
-import pyppeteer
+from playwright.sync_api import sync_playwright
 
 class RequestsHTMLSession:
     def __init__(self):
         self._setup_encoding()
-        self._patch_pyppeteer()
-        self.session = HTMLSession()
-        self._setup_session()
+        self.playwright = None
+        self.browser = None
+        self.context = None
         self.last_request_time = 0
-    
+        
     def _setup_encoding(self):
         os.environ['PYTHONIOENCODING'] = 'utf-8'
         os.environ['LANG'] = 'en_US.UTF-8'
         os.environ['LC_ALL'] = 'en_US.UTF-8'
     
-    def _patch_pyppeteer(self):
-        """Parche para pyppeteer con argumentos seguros para servidores"""
-        original_launch = pyppeteer.launch
-
-        async def safe_launch(**kwargs):
-            safe_args = [
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-dev-shm-usage',
-                '--disable-accelerated-2d-canvas',
-                '--disable-gpu',
-                '--disable-extensions',
-                '--disable-plugins',
-                '--disable-images',
-                '--window-size=1920,1080',
-                '--single-process',
-                '--no-zygote',
-                '--disable-dev-tools',
-                '--disable-background-timer-throttling',
-                '--disable-backgrounding-occluded-windows',
-                '--disable-renderer-backgrounding',
-                '--memory-pressure-off',
-                '--max_old_space_size=4096',
-                '--disable-web-security',
-                '--disable-features=TranslateUI',
-                '--disable-ipc-flooding-protection'
-            ]
+    def _init_playwright(self):
+        if self.playwright is None:
+            self.playwright = sync_playwright().start()
             
-            existing_args = kwargs.get('args', [])
-            kwargs['args'] = safe_args + existing_args
+            self.browser = self.playwright.chromium.launch(
+                headless=True,
+                args=[
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--disable-dev-shm-usage',
+                    '--disable-accelerated-2d-canvas',
+                    '--disable-gpu',
+                    '--disable-extensions',
+                    '--disable-plugins',
+                    '--disable-images',
+                    '--disable-background-timer-throttling',
+                    '--disable-backgrounding-occluded-windows',
+                    '--disable-renderer-backgrounding',
+                    '--disable-features=TranslateUI',
+                    '--disable-ipc-flooding-protection',
+                    '--memory-pressure-off',
+                    '--max_old_space_size=512',
+                    '--single-process',
+                    '--no-zygote',
+                    '--window-size=1024,768',
+                    '--disable-web-security',
+                    '--disable-dev-tools'
+                ]
+            )
             
-            kwargs['headless'] = True
-            kwargs['handleSIGINT'] = False
-            kwargs['handleSIGTERM'] = False
-            kwargs['handleSIGHUP'] = False
+            self.context = self.browser.new_context(
+                viewport={'width': 1024, 'height': 768},
+                user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            )
             
-            return await original_launch(**kwargs)
-
-        pyppeteer.launch = safe_launch
-    
-    def _setup_session(self):
-        user_agents = [
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0'
-        ]
-        
-        headers = {
-            'User-Agent': random.choice(user_agents),
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-            'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'DNT': '1',
-            'Connection': 'keep-alive',
-            'Upgrade-Insecure-Requests': '1',
-            'Cache-Control': 'max-age=0'
-        }
-        
-        self.session.headers.update(headers)
-    
+            self.context.route("**/*.{png,jpg,jpeg,gif,svg,css,woff,woff2,ttf,ico}", 
+                             lambda route: route.abort())
+            
+            self.context.route("**/google-analytics.com/**", lambda route: route.abort())
+            self.context.route("**/googletagmanager.com/**", lambda route: route.abort())
+            self.context.route("**/facebook.com/**", lambda route: route.abort())
+            
     def get(self, url, wait_for=None, render_js=True, wait_time=2):
         max_attempts = 3
         
@@ -90,41 +70,18 @@ class RequestsHTMLSession:
                     delay = 2 * (2 ** attempt) + random.uniform(0.5, 1.5)
                     time.sleep(delay)
                 
-                r = self.session.get(url, timeout=30)
-                r.raise_for_status()
-                
                 if render_js:
-                    render_params = {
-                        'timeout': 20,
-                        'wait': wait_time,
-                        'sleep': 1,
-                        'keep_page': True,
-                        'reload': False
-                    }
-                    
-                    try:
-                        r.html.render(**render_params)
-                    except Exception as e:
-                        print(f"Error rendering page: {e}")
-                        os.system("pkill -f chrome 2>/dev/null || true")
-                        if attempt == max_attempts - 1:
-                            raise
-                        continue
-                    
-                    if wait_for:
-                        if not self._wait_for_selector(r.html, wait_for):
-                            continue
-                
-                soup = BeautifulSoup(r.html.html, 'html.parser')
-                
-                if self._is_complete_page(soup):
-                    return soup
+                    return self._get_with_playwright(url, wait_for, wait_time)
                 else:
-                    continue
+                    import requests
+                    response = requests.get(url, timeout=30)
+                    response.raise_for_status()
+                    return BeautifulSoup(response.content, 'html.parser')
                 
             except Exception as e:
                 print(f"Attempt {attempt + 1} failed: {e}")
-                os.system("pkill -f chrome 2>/dev/null || true")
+                
+                self._cleanup_playwright()
                 
                 if attempt == max_attempts - 1:
                     raise
@@ -132,20 +89,44 @@ class RequestsHTMLSession:
         
         raise Exception(f"Failed to load page after {max_attempts} attempts")
     
-    def _wait_for_selector(self, html_obj, selector, max_wait=10):
-        start_time = time.time()
+    def _get_with_playwright(self, url, wait_for=None, wait_time=2):
+        self._init_playwright()
         
-        while time.time() - start_time < max_wait:
-            try:
-                elements = html_obj.find(selector)
-                if elements:
-                    return True
-            except:
-                pass
+        page = None
+        try:
+            page = self.context.new_page()
             
-            time.sleep(0.5)
-        
-        return False
+            page.set_default_timeout(15000)
+            page.set_default_navigation_timeout(20000)
+            
+            page.goto(url, wait_until='domcontentloaded')
+            
+            page.wait_for_timeout(wait_time * 1000)
+            
+            if wait_for:
+                try:
+                    page.wait_for_selector(wait_for, timeout=10000)
+                except:
+                    print(f"Selector {wait_for} no encontrado, continuando...")
+            
+            content = page.content()
+            soup = BeautifulSoup(content, 'html.parser')
+            
+            if self._is_complete_page(soup):
+                return soup
+            else:
+                raise Exception("Página incompleta")
+                
+        finally:
+            if page:
+                page.close()
+    
+    def _wait_for_selector(self, page, selector, max_wait=10):
+        try:
+            page.wait_for_selector(selector, timeout=max_wait * 1000)
+            return True
+        except:
+            return False
     
     def _apply_rate_limit(self):
         min_delay = 2.0
@@ -162,7 +143,7 @@ class RequestsHTMLSession:
         if not soup.find('body') or not soup.find('head'):
             return False
         
-        if len(str(soup)) < 3000:
+        if len(str(soup)) < 1000:
             return False
         
         page_text = soup.get_text().lower()
@@ -187,11 +168,44 @@ class RequestsHTMLSession:
         
         return True
     
+    def _cleanup_playwright(self):
+        try:
+            if self.context:
+                self.context.close()
+                self.context = None
+            if self.browser:
+                self.browser.close()
+                self.browser = None
+            if self.playwright:
+                self.playwright.stop()
+                self.playwright = None
+        except:
+            pass
+    
     def close(self):
-        if self.session:
-            try:
-                self.session.close()
-            except:
-                pass
+        self._cleanup_playwright()
+
+class LightweightPlaywrightSession(RequestsHTMLSession):
+    def __init__(self):
+        super().__init__()
+    
+    def get_light(self, url, render_js=False):
+        try:
+            if not render_js:
+                import requests
+                response = requests.get(url, timeout=15, headers={
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                })
+                soup = BeautifulSoup(response.content, 'html.parser')
+                
+                if len(soup.get_text()) > 1000 and soup.find_all(['div', 'article', 'section']):
+                    return soup
             
-        os.system("pkill -f chrome 2>/dev/null || true")
+            return self.get(url, render_js=True, wait_time=1)
+            
+        except Exception as e:
+            print(f"Error en get_light: {e}")
+            raise
+
+def create_lightweight_session():
+    return LightweightPlaywrightSession()
