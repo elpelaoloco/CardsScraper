@@ -15,13 +15,17 @@ jobs:
         username: ubuntu
         key: ${{ secrets.AWS_KEY }}
         script: |
-          cd CardScraper || {
+          cd /home/ubuntu/CardsScraper || {
             echo "First time - cloning repository"
-            git clone https://github.com/${{ github.repository }}.git CardScraper
-            cd CardScraper
+            git clone https://github.com/${{ github.repository }}.git CardsScraper
+            cd CardsScraper
           }
           
           echo "Updating code..."
           git pull origin main
+          
+          echo "Activating virtual environment..."
           source venv/bin/activate
+          
+          echo "Installing dependencies..."
           pip install -r requirements.txt
