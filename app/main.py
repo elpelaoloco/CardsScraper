@@ -5,11 +5,10 @@ from src.pipeline import ScraperPipeline, PipelineConfig
 
 def main():
     """Main execution function"""
-    # Configuration
     base_url = os.getenv("API_URL", "http://localhost:8000/")
 
     config = PipelineConfig(
-        config_path=os.getenv("CONFIG_PATH", "configs/scrapers_config.json"),
+        config_path=os.getenv("CONFIG_PATH", "configs/test_config.json"),
         api_endpoint=f"{base_url}scrapper/bulk",
         api_headers={
             "Content-Type": "application/json",

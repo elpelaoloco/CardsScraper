@@ -66,23 +66,6 @@ class BaseScraper(ABC):
             self.logger.info("Closing WebDriver")
             self.driver.quit()
 
-    def take_screenshot(self, filename: Optional[str] = None) -> str:
-
-        if not self.driver:
-            self.logger.warning("Cannot take screenshot: WebDriver not initialized")
-            return ""
-
-        if not os.path.exists('screenshots'):
-            os.makedirs('screenshots')
-
-        if not filename:
-            filename = f"screenshots/{self.name}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
-        elif not filename.startswith('screenshots/'):
-            filename = f"screenshots/{filename}"
-
-        self.driver.save_screenshot(filename)
-        self.logger.info(f"Screenshot saved to {filename}")
-        return filename
 
     def wait_for_element(
             self,

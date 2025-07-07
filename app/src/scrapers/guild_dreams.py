@@ -41,7 +41,6 @@ class GuildDreamsScraper(BaseScraper):
                 f"Couldn't find title elements for category {category.name}")
             return []
 
-        self.take_screenshot(f"{self.name}_{category.name}_listing.png")
 
         elements = self.driver.find_elements(By.XPATH, urls_selector)
         self.logger.info(f"Found {len(elements)} title elements")
@@ -52,7 +51,7 @@ class GuildDreamsScraper(BaseScraper):
                 title = element.text.strip()
                 url = element.get_attribute('href')
 
-                # Buscar imagen desde el elemento padre
+               
                 try:
                     container = element.find_element(
                         By.XPATH, "./ancestor::div[contains(@class, 'bs-product')]")
@@ -79,7 +78,7 @@ class GuildDreamsScraper(BaseScraper):
 
         data = {}
 
-        # Nombre
+        
         title_selector = category.selectors.get('title_selector')
         try:
             if title_selector:
@@ -92,7 +91,7 @@ class GuildDreamsScraper(BaseScraper):
             self.logger.warning("Name element not found")
             data['name'] = "unknown"
 
-        # Precio
+        
         price_selector = category.selectors.get('price_selector')
         try:
             if price_selector:
@@ -109,7 +108,7 @@ class GuildDreamsScraper(BaseScraper):
             self.logger.warning("Price element not found")
             data['price'] = "unknown"
 
-        # Stock
+        
         stock_selector = category.selectors.get('stock_selector')
         if stock_selector:
             try:
@@ -118,7 +117,7 @@ class GuildDreamsScraper(BaseScraper):
             except Exception:
                 self.logger.warning("Stock element not found")
 
-        # Descripción
+        
         description_selector = category.selectors.get('description_selector')
         if description_selector:
             try:
@@ -128,7 +127,7 @@ class GuildDreamsScraper(BaseScraper):
             except Exception:
                 self.logger.warning("Description element not found")
 
-        # Idioma desde descripción
+        
         language_selector = category.selectors.get('language_selector')
         if language_selector and 'description' in data:
             try:
@@ -139,7 +138,7 @@ class GuildDreamsScraper(BaseScraper):
                 self.logger.warning("Error extracting language")
                 data['language'] = "unknown"
 
-        # Imagen
+        
         image_xpath = category.selectors.get('image_selector')
         try:
             if image_xpath:

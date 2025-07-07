@@ -1,39 +1,48 @@
 {
-  "scrapers": {
-    "thirdimpact": {
-      "type": "thirdimpact",
+  "scrapers":{
+
+    "game_of_magic": {
+      "type": "game_of_magic",
       "headless": true,
       "page_load_delay": 2,
-      "batch_size": 1,
+      "batch_size": 10,
       "categories": {
         "pokemon": {
-          "url": "https://www.thirdimpact.cl/collection/pokemon-trading-card-game",
+          "url": "https://www.gameofmagictienda.cl/collection/pokemon",
           "selectors": {
-            "product_selector": "//section[contains(@class, 'grid__item')]",
-            "urls_selector": ".//a[contains(@class, 'bs-collection__product-info')]",
-            "price_selector": ".//span[contains(@class, 'bs-product__final-price')]",
-            "stock_selector": ".//p[contains(text(), 'Agotado')]",
-            "description_selector": "//section[@class='bs-product-description']",
+            "product_selector": "div[class*='bs-collection__product']",
+            "urls_selector": "a[href*='/product/']",
+            "price_selector": "//span[contains(@class, 'bs-product__final-price')]",
             "title_selector": "//h1[contains(@class, 'bs-product__title')]",
-            "image_selector": "//picture//img",
-            "language_selector": "//div[@id='bs-product-form' and contains(@class, 'form')]//label"
+            "image_selector": "//div[contains(@class, 'bs-img-square')]//img[contains(@src, 'cloudfront')]"
+            
+            
           }
         },
         "magic": {
-          "url": "https://www.thirdimpact.cl/collection/magic-the-gathering",
+          "url": "https://www.gameofmagictienda.cl/collection/magic",
           "selectors": {
-            "product_selector": "//section[contains(@class, 'grid__item')]",
-            "urls_selector": ".//a[contains(@class, 'bs-collection__product-info')]",
-            "price_selector": ".//span[contains(@class, 'bs-product__final-price')]",
-            "stock_selector": ".//p[contains(text(), 'Agotado')]",
-            "description_selector": "//section[@class='bs-product-description']",
+            "product_selector": "div[class*='bs-collection__product']",
+            "urls_selector": "a[href*='/product/']",
+            "price_selector": "//span[contains(@class, 'bs-product__final-price')]",
             "title_selector": "//h1[contains(@class, 'bs-product__title')]",
-            "image_selector": "//picture//img",
-            "language_selector": "//div[@id='bs-product-form' and contains(@class, 'form')]//label"
+            "image_selector": "//div[contains(@class, 'bs-img-square')]//img[contains(@src, 'cloudfront')]"
+            
+            
+          }
+        },
+        "yugioh": {
+          "url": "https://www.gameofmagictienda.cl/collection/yugioh",
+          "selectors": {
+            "product_selector": "div[class*='bs-collection__product']",
+            "urls_selector": "a[href*='/product/']",
+            "price_selector": "//span[contains(@class, 'bs-product__final-price')]",
+            "title_selector": "//h1[contains(@class, 'bs-product__title')]",
+            "image_selector": "//div[contains(@class, 'bs-img-square')]//img[contains(@src, 'cloudfront')]"
+            
           }
         }
       }
     }
   }
-   
-}
+  }

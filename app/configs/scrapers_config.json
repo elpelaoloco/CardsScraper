@@ -4,7 +4,7 @@
       "type": "thirdimpact",
       "headless": true,
       "page_load_delay": 2,
-      "batch_size": 3,
+      "batch_size": 10,
       "categories": {
         "pokemon": {
           "url": "https://www.thirdimpact.cl/collection/pokemon-trading-card-game",
@@ -38,7 +38,7 @@
       "type": "card_universe",
       "headless": true,
       "page_load_delay": 2,
-      "batch_size": 3,
+      "batch_size": 10,
       "categories": {
         "pokemon": {
           "url": "https://carduniverse.cl/collections/pokemon-tcg",
@@ -118,7 +118,7 @@
       "type": "guild_dreams",
       "headless": true,
       "page_load_delay": 2,
-      "batch_size": 4,
+      "batch_size": 10,
       "categories": {
         "pokemon": {
           "url": "https://www.guildreams.com/collection/pokemon",
@@ -156,7 +156,7 @@
       "type": "hunter_card_tcg",
       "headless": true,
       "page_load_delay": 2,
-      "batch_size": 3,
+      "batch_size": 10,
       "categories": {
         "pokemon": {
           "url": "https://www.huntercardtcg.com/categoria-producto/cartas-sueltas/silver-tempest/",
@@ -186,7 +186,7 @@
       "type": "game_of_magic",
       "headless": true,
       "page_load_delay": 2,
-      "batch_size": 4,
+      "batch_size": 10,
       "categories": {
         "pokemon": {
           "url": "https://www.gameofmagictienda.cl/collection/pokemon",
@@ -229,7 +229,7 @@
       "type": "el_reino",
       "headless": true,
       "page_load_delay": 2,
-      "batch_size": 3,
+      "batch_size": 10,
       "categories": {
         "pokemon": {
           "url": "https://elreinodelosduelos.cl/categoria-producto/pokemon-tcg/sobres-pokemon-tcg/",

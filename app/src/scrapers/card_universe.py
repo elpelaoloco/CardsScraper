@@ -21,7 +21,6 @@ class CardUniverseScraper(BaseScraper):
                 f"Couldn't find title elements for category {category.name}")
             return []
 
-        self.take_screenshot(f"{self.name}_{category.name}_listing.png")
 
         elements = self.driver.find_elements(By.XPATH, urls_selector)
         self.logger.info(f"Found {len(elements)} title elements")
