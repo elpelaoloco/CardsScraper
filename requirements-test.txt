@@ -8,3 +8,5 @@ pytest-html
 pytest-mock
 coverage
 pytest-xdist
+openpyxl
+beautifulsoup4  
