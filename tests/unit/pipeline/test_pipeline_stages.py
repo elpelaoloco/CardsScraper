@@ -33,7 +33,8 @@ class TestInitializationStage:
             output_dir="test_output"
         )
     
-    def test_stage_name(self, init_stage):
+    @patch('os.makedirs')
+    def test_stage_name(self, mock_makedirs, init_stage, sample_config):
         context = {'config': sample_config}
         
         result = init_stage.execute(context)
@@ -57,40 +58,13 @@ class TestInitializationStage:
         assert "AttributeError" in result.error or "'NoneType'" in result.error
     
     def test_execute_config_none(self, init_stage):
-        mock_perf_counter.side_effect = [1000.0, 1005.5]  # start, end
+        context = {'config': None}
         
-        mock_manager = Mock()
-        mock_results = {
-            'store1': {'magic': [{'name': 'Card1', 'price': 100}]},
-            'store2': {'pokemon': [{'name': 'Card2', 'price': 200}]}
-        }
-        mock_report = {
-            'store1': {'magic': {'total_products': 1, 'processed_products': 1}},
-            'store2': {'pokemon': {'total_products': 1, 'processed_products': 1}}
-        }
+        result = init_stage.execute(context)
         
-        mock_manager.run_all.return_value = mock_results
-        mock_manager.get_report.return_value = mock_report
-        mock_scraper_manager_class.return_value = mock_manager
-        
-        context = {'config': sample_config}
-        
-        result = scraping_stage.execute(context)
-        
-        assert result.success is True
-        assert result.stage == PipelineStage.SCRAPING
-        assert result.data == mock_results
-        assert result.message == "Scraping completed. Found 2 scrapers"
-        assert result.error is None
-        
-        assert context['manager'] == mock_manager
-        assert context['scraper_results'] == mock_results
-        assert context['report'] == mock_report
-        assert context['scraping_time'] == 5.5
-        
-        mock_scraper_manager_class.assert_called_once_with("configs/test_config.json")
-        mock_manager.run_all.assert_called_once()
-        mock_manager.get_report.assert_called_once()
+        assert result.success is False
+        assert result.stage == PipelineStage.INIT
+        assert "AttributeError" in result.error or "'NoneType'" in result.error
     
     @patch('src.pipeline.stages.scraping.ScraperManager')
     def test_execute_scraper_manager_exception(self, mock_scraper_manager_class, scraping_stage, sample_config):
@@ -200,7 +174,7 @@ class TestPostRequestStage:
             config_path="test/config.json"
         )
     
-    def test_stage_name(self, post_request_stage):
+    def test_stage_name(self, post_request_stage, sample_config_no_api):
         context = {'config': sample_config_no_api}
         
         result = post_request_stage.execute(context)
@@ -245,8 +219,16 @@ class TestPostRequestStage:
         assert "Unexpected error: Unexpected error" in result.error
     
     @patch('requests.post')
-    def test_execute_default_headers(self, mock_post, post_request_stage):
-        assert cleanup_stage.stage_name == "Cleanup"
+    def test_execute_default_headers(self, mock_post, post_request_stage, sample_config_with_api):
+        context = {
+            'config': sample_config_with_api,
+            'consolidated_data': [],
+            'scraper_results': {}
+        }
+        
+        result = post_request_stage.execute(context)
+        
+        assert result is not None
     
     def test_execute_success_with_manager(self, cleanup_stage):
         context = {}

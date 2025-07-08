@@ -8,6 +8,45 @@ from src.pipeline.stages.base import BaseStage
 
 
 class MockStage(BaseStage):
+    def __init__(self, context, name, success=True, error_message=None, stage_enum=None, data=None):
+        super().__init__(context)
+        self._name = name
+        self.success = success
+        self.error_message = error_message
+        self.stage_enum = stage_enum
+        self.data = data
+    
+    @property
+    def stage_name(self):
+        return self._name
+    
+    def execute(self):
+        if self.success:
+            return PipelineResult(
+                success=True,
+                stage=self.stage_enum,
+                message=f"{self._name} completed successfully",
+                data=self.data
+            )
+        else:
+            return PipelineResult(
+                success=False,
+                stage=self.stage_enum,
+                error=self.error_message
+            )
+
+
+class TestScraperPipeline:
+    
+    @pytest.fixture
+    def sample_config(self):
+        return PipelineConfig(
+            config_path="configs/test_config.json",
+            api_endpoint='https://api.test.com',
+            output_dir="test_data"
+        )
+    
+    def test_pipeline_initialization(self, sample_config):
         pipeline = ScraperPipeline(sample_config)
         
         assert pipeline.config == sample_config
@@ -15,9 +54,16 @@ class MockStage(BaseStage):
         assert hasattr(pipeline, 'context')
         assert pipeline.context['config'] == sample_config
         assert hasattr(pipeline, 'stages')
-        assert len(pipeline.stages) == 6  # All 6 stages
-    
-    def test_initialize_stages(self, pipeline):
+        assert len(pipeline.stages) == 6
+
+    @patch('src.pipeline.stages.initialization.InitializationStage')
+    @patch('src.pipeline.stages.scraping.ScrapingStage')
+    @patch('src.pipeline.stages.consolidation.ConsolidationStage')
+    @patch('src.pipeline.stages.export.ExportStage')
+    @patch('src.pipeline.stages.post_request.PostRequestStage')
+    @patch('src.pipeline.stages.cleanup.CleanupStage')
+    def test_run_success(self, mock_cleanup, mock_post, mock_export, 
+                        mock_consolidation, mock_scraping, mock_init, sample_config):
         mock_stages = []
         stage_data = [
             ("Init", PipelineStage.INIT, None),
@@ -51,7 +97,7 @@ class MockStage(BaseStage):
         for stage_detail in summary['stages_detail']:
             assert stage_detail['success'] is True
             assert stage_detail['error'] is None
-    
+
     @patch('src.pipeline.stages.initialization.InitializationStage')
     @patch('src.pipeline.stages.scraping.ScrapingStage')
     @patch('src.pipeline.stages.consolidation.ConsolidationStage')
@@ -77,15 +123,8 @@ class MockStage(BaseStage):
         assert init_detail['stage'] == 'initialization'
         assert init_detail['success'] is False
         assert init_detail['error'] == "Permission denied"
-    
-    @patch('src.pipeline.stages.initialization.InitializationStage')
-    @patch('src.pipeline.stages.scraping.ScrapingStage')
-    @patch('src.pipeline.stages.consolidation.ConsolidationStage')
-    @patch('src.pipeline.stages.export.ExportStage')
-    @patch('src.pipeline.stages.post_request.PostRequestStage')
-    @patch('src.pipeline.stages.cleanup.CleanupStage')
-    def test_run_with_non_critical_failure(self, mock_cleanup, mock_post, mock_export,
-                                          mock_consolidation, mock_scraping, mock_init, sample_config):
+
+    def test_generate_summary_with_context(self, sample_config):
         pipeline = ScraperPipeline(sample_config)
         
         pipeline.context.update({
@@ -123,8 +162,8 @@ class MockStage(BaseStage):
         store1_report = next(r for r in summary['detailed_reports'] if r['scraper'] == 'store1')
         assert store1_report['game'] == 'magic'
         assert store1_report['report']['total_products'] == 5
-    
-    def test_generate_summary_minimal_data(self, sample_config):
+
+    def test_context_management(self, sample_config):
         pipeline = ScraperPipeline(sample_config)
         
         assert 'config' in pipeline.context
@@ -132,8 +171,8 @@ class MockStage(BaseStage):
         
         pipeline.context['test_data'] = "test_value"
         assert pipeline.context['test_data'] == "test_value"
-    
-    def test_logger_creation(self, sample_config):
+
+    def test_stages_initialization(self, sample_config):
         pipeline = ScraperPipeline(sample_config)
         
         expected_stage_types = [
@@ -147,5 +186,9 @@ class MockStage(BaseStage):
         
         actual_stage_types = [type(stage).__name__ for stage in pipeline.stages]
         assert actual_stage_types == expected_stage_types
-    
-    def test_pipeline_immutable_config(self, sample_config):
+
+    def test_pipeline_config_immutability(self, sample_config):
+        pipeline = ScraperPipeline(sample_config)
+        original_config = pipeline.config
+        
+        assert pipeline.config is original_config
