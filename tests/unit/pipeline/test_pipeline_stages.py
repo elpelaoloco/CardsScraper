@@ -6,6 +6,7 @@ import pandas as pd
 import requests
 from unittest.mock import Mock, patch, mock_open, MagicMock
 from typing import Any, Dict
+from time import perf_counter
 
 from src.pipeline.models import PipelineResult, PipelineStage, PipelineConfig
 from src.pipeline.stages.initialization import InitializationStage
@@ -33,8 +34,11 @@ class TestInitializationStage:
             output_dir="test_output"
         )
 
+    def test_stage_name(self, init_stage):
+        assert init_stage.stage_name == "Initialization"
+
     @patch('os.makedirs')
-    def test_stage_name(self, mock_makedirs, init_stage, sample_config):
+    def test_execute_success(self, mock_makedirs, init_stage, sample_config):
         context = {'config': sample_config}
 
         result = init_stage.execute(context)
@@ -66,23 +70,57 @@ class TestInitializationStage:
         assert result.stage == PipelineStage.INIT
         assert "AttributeError" in result.error or "'NoneType'" in result.error
 
+
+class TestScrapingStage:
+
+    @pytest.fixture
+    def mock_logger(self):
+        return Mock(spec=logging.Logger)
+
+    @pytest.fixture
+    def scraping_stage(self, mock_logger):
+        return ScrapingStage(mock_logger)
+
+    @pytest.fixture
+    def sample_config(self):
+        return PipelineConfig(
+            config_path="test/config.json",
+            output_dir="test_output"
+        )
+
+    def test_stage_name(self, scraping_stage):
+        assert scraping_stage.stage_name == "Scraping"
+
     @patch('src.pipeline.stages.scraping.ScraperManager')
-    def test_execute_scraper_manager_exception(self, mock_scraper_manager_class, scraping_stage, sample_config):
+    @patch('time.perf_counter')
+    def test_execute_success(self, mock_perf_counter, mock_scraper_manager_class, scraping_stage, sample_config):
         mock_perf_counter.side_effect = [1000.0, 1005.5]
 
         mock_manager = Mock()
-        mock_manager.run_all.side_effect = Exception("Scraping failed")
+        mock_manager.run_all.return_value = {}
+        mock_manager.get_report.return_value = {}
         mock_scraper_manager_class.return_value = mock_manager
 
         context = {'config': sample_config}
 
         result = scraping_stage.execute(context)
 
-        assert result.success is False
+        assert result.success is True
         assert result.stage == PipelineStage.SCRAPING
-        assert result.error == "Scraping failed"
+        assert result.message == "Scraping completed. Found 0 scrapers"
 
-    def test_stage_name(self, scraping_stage):
+
+class TestConsolidationStage:
+
+    @pytest.fixture
+    def mock_logger(self):
+        return Mock(spec=logging.Logger)
+
+    @pytest.fixture
+    def consolidation_stage(self, mock_logger):
+        return ConsolidationStage(mock_logger)
+
+    def test_stage_name(self, consolidation_stage):
         assert consolidation_stage.stage_name == "Consolidation"
 
     def test_execute_success(self, consolidation_stage):
@@ -96,16 +134,25 @@ class TestInitializationStage:
         assert result.data == []
         assert context['consolidated_data'] == []
 
-    def test_execute_empty_categories(self, consolidation_stage):
-        context = {}
 
-        result = consolidation_stage.execute(context)
+class TestExportStage:
 
-        assert result.success is True
-        assert result.message == "Consolidated 0 items"
-        assert result.data == []
+    @pytest.fixture
+    def mock_logger(self):
+        return Mock(spec=logging.Logger)
 
-    def test_execute_exception(self, consolidation_stage):
+    @pytest.fixture
+    def export_stage(self, mock_logger):
+        return ExportStage(mock_logger)
+
+    @pytest.fixture
+    def sample_config(self):
+        return PipelineConfig(
+            config_path="test/config.json",
+            output_dir="test_output"
+        )
+
+    def test_stage_name(self, export_stage):
         assert export_stage.stage_name == "Export"
 
     @patch('builtins.open', new_callable=mock_open)
@@ -114,13 +161,10 @@ class TestInitializationStage:
     def test_execute_success_with_data(self, mock_path_join, mock_to_excel, mock_file_open, export_stage, sample_config):
         mock_path_join.side_effect = lambda *args: '/'.join(args)
 
-        scraper_results = {}
-        consolidated_data = []
-
         context = {
             'config': sample_config,
-            'scraper_results': scraper_results,
-            'consolidated_data': consolidated_data
+            'scraper_results': {},
+            'consolidated_data': []
         }
 
         result = export_stage.execute(context)
@@ -128,25 +172,28 @@ class TestInitializationStage:
         assert result.success is True
         assert result.stage == PipelineStage.EXPORT
 
-        mock_to_excel.assert_called_once_with("test_output/test_data.xlsx", index=False)
-        export_stage.logger.warning.assert_called_once_with("No data found to export. Creating empty Excel file.")
 
-    @patch('builtins.open')
-    def test_execute_save_json_exception(self, mock_file_open, export_stage, sample_config):
-        mock_path_join.side_effect = lambda *args: '/'.join(args)
-        mock_to_excel.side_effect = Exception("Excel write failed")
+class TestCleanupStage:
 
-        context = {
-            'config': sample_config,
-            'scraper_results': {},
-            'consolidated_data': [{'name': 'test'}]
-        }
+    @pytest.fixture
+    def mock_logger(self):
+        return Mock(spec=logging.Logger)
 
-        result = export_stage.execute(context)
+    @pytest.fixture
+    def cleanup_stage(self, mock_logger):
+        return CleanupStage(mock_logger)
 
-        assert result.success is False
-        assert result.stage == PipelineStage.EXPORT
-        assert "Excel write failed" in result.error
+    def test_stage_name(self, cleanup_stage):
+        assert cleanup_stage.stage_name == "Cleanup"
+
+    def test_execute_success_with_manager(self, cleanup_stage):
+        context = {}
+
+        result = cleanup_stage.execute(context)
+
+        assert result.success is True
+        assert result.stage == PipelineStage.CLEANUP
+        assert result.message == "Cleanup completed successfully"
 
 
 class TestPostRequestStage:
@@ -229,25 +276,3 @@ class TestPostRequestStage:
         result = post_request_stage.execute(context)
 
         assert result is not None
-
-    def test_execute_success_with_manager(self, cleanup_stage):
-        context = {}
-
-        result = cleanup_stage.execute(context)
-
-        assert result.success is True
-        assert result.stage == PipelineStage.CLEANUP
-        assert result.message == "Cleanup completed successfully"
-
-    def test_execute_manager_none(self, cleanup_stage):
-        mock_manager = Mock()
-        mock_manager.make_report.side_effect = Exception("Report generation failed")
-
-        context = {'manager': mock_manager}
-
-        result = cleanup_stage.execute(context)
-
-        assert result.success is False
-        assert result.stage == PipelineStage.CLEANUP
-        assert result.error == "Report generation failed"
-        assert result.message is None

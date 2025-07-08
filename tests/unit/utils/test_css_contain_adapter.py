@@ -113,9 +113,10 @@ class TestEnhancedSelector:
         html = '<div id="test">Content</div>'
         soup = BeautifulSoup(html, 'html.parser')
 
+        # XPath no está soportado en BeautifulSoup, debe devolver lista vacía
         result = EnhancedSelector.select(soup, '//div[@id="test"]')
 
-        assert len(result) >= 0
+        assert len(result) == 0
 
 
 class TestStockChecker:

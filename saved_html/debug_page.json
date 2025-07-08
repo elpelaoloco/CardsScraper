@@ -1,19 +1,18 @@
 {
   "filename": "debug_page.html",
-  "save_date": "2025-07-08T02:36:59.761559",
-  "file_size_bytes": 2612651,
-  "file_size_kb": 2551.42,
-  "content_length": 2611513,
+  "save_date": "2025-07-08T03:25:50.776169",
+  "file_size_bytes": 224897,
+  "file_size_kb": 219.63,
+  "content_length": 224631,
   "prettified": true,
   "status": "success",
-  "title": "The Ninth Doctor (Serial Numbered) [Doctor Who]",
-  "meta_description": "Set: Doctor Who Type: Legendary Creature — Time Lord Doctor Rarity: Rare Cost: {1}{U}{R} HasteInto the TARDIS — Whenever The Ninth Doctor becomes untapped during your untap step, you get an additional upkeep step after this step.",
+  "title": "Booster Box: Yu-Gi-Oh! Valiant Smashers - El Reino de los Duelos",
   "stats": {
-    "links": 1042,
-    "images": 81,
-    "paragraphs": 18,
-    "divs": 2543,
-    "scripts": 136,
-    "stylesheets": 71
+    "links": 159,
+    "images": 21,
+    "paragraphs": 37,
+    "divs": 312,
+    "scripts": 98,
+    "stylesheets": 76
   }
 }

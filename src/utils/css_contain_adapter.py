@@ -111,6 +111,14 @@ class StockChecker:
         return False
 
     @staticmethod
+    def _check_text_indicators(text: str, indicators: List[str]) -> bool:
+        text_lower = text.lower()
+        for indicator in indicators:
+            if indicator.lower() in text_lower:
+                return True
+        return False
+
+    @staticmethod
     def _search_entire_page_for_stock_out(soup: BeautifulSoup) -> bool:
         common_stock_selectors = [
             'p', 'span', 'div.stock', 'div.availability',
@@ -153,7 +161,14 @@ class EnhancedSelector:
         if ':first-child' in selector:
             return EnhancedSelector._handle_first_child(soup, selector)
 
-        return soup.select(selector)
+        # Handle XPath selectors (not supported by BeautifulSoup)
+        if selector.startswith('//') or selector.startswith('/'):
+            return []
+
+        try:
+            return soup.select(selector)
+        except Exception:
+            return []
 
     @staticmethod
     def _handle_first_child(soup: BeautifulSoup, selector: str) -> List[Tag]:

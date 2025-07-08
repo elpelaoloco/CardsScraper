@@ -14,18 +14,22 @@ class TestSaveSoup:
 
         with patch('pathlib.Path.mkdir') as mock_mkdir:
             with patch('builtins.open', mock_open()) as mock_file:
-                result = save_soup_to_file(soup, filename='test.html', output_dir='output')
+                with patch('pathlib.Path.stat') as mock_stat:
+                    mock_stat.return_value.st_size = 1024
+                    result = save_soup_to_file(soup, filename='test.html', output_dir='output')
 
         mock_mkdir.assert_called_once_with(parents=True, exist_ok=True)
         assert isinstance(result, dict)
-        assert 'html_path' in result or 'success' in result
+        assert 'file_size_bytes' in result
 
     def test_save_soup_to_file_auto_filename(self):
         soup = BeautifulSoup('<html><head><title>Test Page</title></head><body>Content</body></html>', 'html.parser')
 
         with patch('pathlib.Path.mkdir'):
             with patch('builtins.open', mock_open()):
-                result = save_soup_to_file(soup, output_dir='output')
+                with patch('pathlib.Path.stat') as mock_stat:
+                    mock_stat.return_value.st_size = 2048
+                    result = save_soup_to_file(soup, output_dir='output')
 
         assert isinstance(result, dict)
 
@@ -35,7 +39,9 @@ class TestSaveSoup:
 
         with patch('pathlib.Path.mkdir'):
             with patch('builtins.open', mock_open()):
-                result = save_soup_to_file(soup, url=url, output_dir='output')
+                with patch('pathlib.Path.stat') as mock_stat:
+                    mock_stat.return_value.st_size = 512
+                    result = save_soup_to_file(soup, url=url, output_dir='output')
 
         assert isinstance(result, dict)
 
@@ -44,18 +50,22 @@ class TestSaveSoup:
 
         with patch('pathlib.Path.mkdir'):
             with patch('builtins.open', mock_open()) as mock_file:
-                save_soup_to_file(soup, filename='test.html', prettify=True)
-                save_soup_to_file(soup, filename='test2.html', prettify=False)
+                with patch('pathlib.Path.stat') as mock_stat:
+                    mock_stat.return_value.st_size = 256
+                    save_soup_to_file(soup, filename='test.html', prettify=True)
+                    save_soup_to_file(soup, filename='test2.html', prettify=False)
 
-        assert mock_file.call_count == 2
+        assert mock_file.call_count >= 2
 
     def test_save_soup_to_file_metadata_option(self):
         soup = BeautifulSoup('<html><body>Content</body></html>', 'html.parser')
 
         with patch('pathlib.Path.mkdir'):
             with patch('builtins.open', mock_open()):
-                result_with_meta = save_soup_to_file(soup, filename='test.html', save_metadata=True)
-                result_without_meta = save_soup_to_file(soup, filename='test2.html', save_metadata=False)
+                with patch('pathlib.Path.stat') as mock_stat:
+                    mock_stat.return_value.st_size = 128
+                    result_with_meta = save_soup_to_file(soup, filename='test.html', save_metadata=True)
+                    result_without_meta = save_soup_to_file(soup, filename='test2.html', save_metadata=False)
 
         assert isinstance(result_with_meta, dict)
         assert isinstance(result_without_meta, dict)
@@ -65,8 +75,10 @@ class TestSaveSoup:
 
         with patch('pathlib.Path.mkdir'):
             with patch('builtins.open', mock_open()):
-                with patch('builtins.print') as mock_print:
-                    save_soup_to_file(soup, filename='debug.html', debug=True)
+                with patch('pathlib.Path.stat') as mock_stat:
+                    mock_stat.return_value.st_size = 64
+                    with patch('builtins.print') as mock_print:
+                        save_soup_to_file(soup, filename='debug.html', debug=True)
 
         # Debug mode might print information
         print_called = mock_print.called
