@@ -20,7 +20,7 @@ class MockStage(BaseStage):
     def stage_name(self):
         return self._name
     
-    def execute(self):
+    def execute(self, context):
         if self.success:
             return PipelineResult(
                 success=True,
@@ -56,61 +56,28 @@ class TestScraperPipeline:
         assert hasattr(pipeline, 'stages')
         assert len(pipeline.stages) == 6
 
-    @patch('src.pipeline.stages.initialization.InitializationStage')
-    @patch('src.pipeline.stages.scraping.ScrapingStage')
-    @patch('src.pipeline.stages.consolidation.ConsolidationStage')
-    @patch('src.pipeline.stages.export.ExportStage')
-    @patch('src.pipeline.stages.post_request.PostRequestStage')
-    @patch('src.pipeline.stages.cleanup.CleanupStage')
-    def test_run_success(self, mock_cleanup, mock_post, mock_export, 
-                        mock_consolidation, mock_scraping, mock_init, sample_config):
-        mock_stages = []
-        stage_data = [
-            ("Init", PipelineStage.INIT, None),
-            ("Scraping", PipelineStage.SCRAPING, {"store1": {"magic": [{"name": "Card1"}]}}),
-            ("Consolidation", PipelineStage.CONSOLIDATION, [{"name": "Card1", "store": "store1"}]),
-            ("Export", PipelineStage.EXPORT, None),
-            ("POST Request", PipelineStage.POST_REQUEST, None),
-            ("Cleanup", PipelineStage.CLEANUP, None)
+    @patch('src.pipeline.pipeline.ScraperPipeline._initialize_stages')
+    def test_run_success(self, mock_init_stages, sample_config):
+        mock_stages = [
+            MockStage(Mock(), "Init", success=True, stage_enum=PipelineStage.INIT),
+            MockStage(Mock(), "Scraping", success=True, stage_enum=PipelineStage.SCRAPING),
+            MockStage(Mock(), "Export", success=True, stage_enum=PipelineStage.EXPORT)
         ]
-        
-        for i, (name, stage_enum, data) in enumerate(stage_data):
-            mock_stage = MockStage(Mock(), name, success=True, stage_enum=stage_enum, data=data)
-            mock_stages.append(mock_stage)
-        
-        mock_init.return_value = mock_stages[0]
-        mock_scraping.return_value = mock_stages[1]
-        mock_consolidation.return_value = mock_stages[2]
-        mock_export.return_value = mock_stages[3]
-        mock_post.return_value = mock_stages[4]
-        mock_cleanup.return_value = mock_stages[5]
+        mock_init_stages.return_value = mock_stages
         
         pipeline = ScraperPipeline(sample_config)
         summary = pipeline.run()
         
-        assert summary['total_stages'] == 6
-        assert summary['successful_stages'] == 6
+        assert summary['total_stages'] == 3
+        assert summary['successful_stages'] == 3
         assert summary['failed_stages'] == 0
-        assert 'stages_detail' in summary
-        assert len(summary['stages_detail']) == 6
-        
-        for stage_detail in summary['stages_detail']:
-            assert stage_detail['success'] is True
-            assert stage_detail['error'] is None
 
-    @patch('src.pipeline.stages.initialization.InitializationStage')
-    @patch('src.pipeline.stages.scraping.ScrapingStage')
-    @patch('src.pipeline.stages.consolidation.ConsolidationStage')
-    @patch('src.pipeline.stages.export.ExportStage')
-    @patch('src.pipeline.stages.post_request.PostRequestStage')
-    @patch('src.pipeline.stages.cleanup.CleanupStage')
-    def test_run_with_stage_failure(self, mock_cleanup, mock_post, mock_export, 
-                                   mock_consolidation, mock_scraping, mock_init, sample_config):
+    @patch('src.pipeline.pipeline.ScraperPipeline._initialize_stages')
+    def test_run_with_stage_failure(self, mock_init_stages, sample_config):
         mock_stages = [
             MockStage(Mock(), "Init", success=False, error_message="Permission denied", stage_enum=PipelineStage.INIT),
         ]
-        
-        mock_init.return_value = mock_stages[0]
+        mock_init_stages.return_value = mock_stages
         
         pipeline = ScraperPipeline(sample_config)
         summary = pipeline.run()

@@ -1,18 +1,19 @@
 {
   "filename": "debug_page.html",
-  "save_date": "2025-07-08T02:34:01.828987",
-  "file_size_bytes": 225491,
-  "file_size_kb": 220.21,
-  "content_length": 225263,
+  "save_date": "2025-07-08T02:36:59.761559",
+  "file_size_bytes": 2612651,
+  "file_size_kb": 2551.42,
+  "content_length": 2611513,
   "prettified": true,
   "status": "success",
-  "title": "Omastar V – 035/195 – Ultra Rare – Inglés – HunterCard TCG",
+  "title": "The Ninth Doctor (Serial Numbered) [Doctor Who]",
+  "meta_description": "Set: Doctor Who Type: Legendary Creature — Time Lord Doctor Rarity: Rare Cost: {1}{U}{R} HasteInto the TARDIS — Whenever The Ninth Doctor becomes untapped during your untap step, you get an additional upkeep step after this step.",
   "stats": {
-    "links": 393,
-    "images": 8,
-    "paragraphs": 8,
-    "divs": 166,
-    "scripts": 48,
-    "stylesheets": 27
+    "links": 1042,
+    "images": 81,
+    "paragraphs": 18,
+    "divs": 2543,
+    "scripts": 136,
+    "stylesheets": 71
   }
 }
