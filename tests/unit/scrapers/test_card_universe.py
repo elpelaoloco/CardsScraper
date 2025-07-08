@@ -7,7 +7,7 @@ from src.core.category import Category
 
 
 class TestCardUniverseScraper:
-    
+
     @pytest.fixture
     def scraper_config(self):
         return {
@@ -25,11 +25,11 @@ class TestCardUniverseScraper:
             },
             'batch_size': 5
         }
-    
+
     @pytest.fixture
     def scraper(self, scraper_config):
         return CardUniverseScraper('card_universe', scraper_config)
-    
+
     @pytest.fixture
     def magic_category(self):
         return Category(
@@ -43,7 +43,7 @@ class TestCardUniverseScraper:
                 'image_selector': 'div.product-single__photo img'
             }
         )
-    
+
     @pytest.fixture
     def sample_category_soup(self):
         html = '''
@@ -65,7 +65,7 @@ class TestCardUniverseScraper:
         </html>
         '''
         return BeautifulSoup(html, 'html.parser')
-    
+
     @patch('src.scrapers.card_universe.CardUniverseScraper.find_elements')
     @patch('src.scrapers.card_universe.CardUniverseScraper.get_text')
     @patch('src.scrapers.card_universe.CardUniverseScraper.get_attribute')
@@ -74,27 +74,27 @@ class TestCardUniverseScraper:
         mock_find_elements.return_value = mock_elements
         mock_get_text.side_effect = ['Lightning Bolt\nDetails', 'Counterspell\nDetails']
         mock_get_attr.side_effect = ['/products/lightning-bolt', '/products/counterspell']
-        
+
         result = scraper.extract_product_urls(sample_category_soup, magic_category)
-        
+
         assert len(result) == 2
         assert result[0] == ('Lightning Bolt', 'https://carduniverse.cl/products/lightning-bolt')
         assert result[1] == ('Counterspell', 'https://carduniverse.cl/products/counterspell')
-    
+
     @patch('src.scrapers.card_universe.CardUniverseScraper.get_page')
     def test_process_product(self, mock_get_page, scraper, magic_category):
         mock_soup = BeautifulSoup('<html><body>Test</body></html>', 'html.parser')
         mock_get_page.return_value = mock_soup
-        
+
         result = scraper.process_product('https://test.com/product', magic_category)
-        
+
         assert result is not None
         assert isinstance(result, dict)
-    
+
     @patch('src.scrapers.card_universe.CardUniverseScraper.get_page')
     def test_process_product_page_error(self, mock_get_page, scraper, magic_category):
         mock_get_page.side_effect = Exception('Page load error')
-        
+
         result = scraper.process_product('https://test.com/product', magic_category)
-        
+
         assert result == {}

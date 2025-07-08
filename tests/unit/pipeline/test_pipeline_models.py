@@ -3,7 +3,7 @@ from src.pipeline.models import PipelineStage, PipelineResult, PipelineConfig
 
 
 class TestPipelineStage:
-    
+
     def test_pipeline_stage_enum_values(self):
         assert PipelineStage.INIT.value == "initialization"
         assert PipelineStage.SCRAPING.value == "scraping"
@@ -22,14 +22,14 @@ class TestPipelineStage:
 
 
 class TestPipelineResult:
-    
+
     def test_pipeline_result_creation_success(self):
         result = PipelineResult(
             success=True,
             stage=PipelineStage.INIT,
             message="Initialization completed"
         )
-        
+
         assert result.success is True
         assert result.stage == PipelineStage.INIT
         assert result.message == "Initialization completed"
@@ -42,7 +42,7 @@ class TestPipelineResult:
             stage=PipelineStage.SCRAPING,
             error="Scraping failed due to network error"
         )
-        
+
         assert result.success is False
         assert result.stage == PipelineStage.SCRAPING
         assert result.error == "Scraping failed due to network error"
@@ -51,14 +51,14 @@ class TestPipelineResult:
 
     def test_pipeline_result_with_data(self):
         test_data = {"scraped_items": 10, "stores": ["store1", "store2"]}
-        
+
         result = PipelineResult(
             success=True,
             stage=PipelineStage.CONSOLIDATION,
             data=test_data,
             message="Consolidation successful"
         )
-        
+
         assert result.success is True
         assert result.stage == PipelineStage.CONSOLIDATION
         assert result.data == test_data
@@ -67,7 +67,7 @@ class TestPipelineResult:
 
     def test_pipeline_result_all_fields(self):
         test_data = [{"product": "test"}]
-        
+
         result = PipelineResult(
             success=True,
             stage=PipelineStage.EXPORT,
@@ -75,7 +75,7 @@ class TestPipelineResult:
             error="Minor warning",
             message="Export completed with warnings"
         )
-        
+
         assert result.success is True
         assert result.stage == PipelineStage.EXPORT
         assert result.data == test_data
@@ -88,28 +88,28 @@ class TestPipelineResult:
             stage=PipelineStage.INIT,
             message="Test"
         )
-        
+
         result2 = PipelineResult(
             success=True,
             stage=PipelineStage.INIT,
             message="Test"
         )
-        
+
         result3 = PipelineResult(
             success=False,
             stage=PipelineStage.INIT,
             message="Test"
         )
-        
+
         assert result1 == result2
         assert result1 != result3
 
 
 class TestPipelineConfig:
-    
+
     def test_pipeline_config_creation_minimal(self):
         config = PipelineConfig(config_path="test/config.json")
-        
+
         assert config.config_path == "test/config.json"
         assert config.api_endpoint is None
         assert config.api_headers is None
@@ -120,7 +120,7 @@ class TestPipelineConfig:
 
     def test_pipeline_config_creation_full(self):
         headers = {"Authorization": "Bearer token", "Content-Type": "application/json"}
-        
+
         config = PipelineConfig(
             config_path="configs/prod_config.json",
             api_endpoint="https://api.example.com/data",
@@ -130,7 +130,7 @@ class TestPipelineConfig:
             excel_filename="data.xlsx",
             request_timeout=60
         )
-        
+
         assert config.config_path == "configs/prod_config.json"
         assert config.api_endpoint == "https://api.example.com/data"
         assert config.api_headers == headers
@@ -144,7 +144,7 @@ class TestPipelineConfig:
             config_path="test.json",
             api_endpoint="https://api.test.com"
         )
-        
+
         assert config.output_dir == "data"
         assert config.json_filename == "prod_result.json"
         assert config.excel_filename == "consolidated_results.xlsx"
@@ -156,16 +156,16 @@ class TestPipelineConfig:
             config_path="test.json",
             api_headers={}
         )
-        
+
         assert config.api_headers == {}
 
     def test_pipeline_config_modification(self):
         config = PipelineConfig(config_path="test.json")
-        
+
         config.output_dir = "new_output"
         config.request_timeout = 120
         config.api_endpoint = "https://new-api.com"
-        
+
         assert config.output_dir == "new_output"
         assert config.request_timeout == 120
         assert config.api_endpoint == "https://new-api.com"
@@ -176,19 +176,19 @@ class TestPipelineConfig:
             output_dir="data",
             request_timeout=30
         )
-        
+
         config2 = PipelineConfig(
             config_path="test.json",
             output_dir="data",
             request_timeout=30
         )
-        
+
         config3 = PipelineConfig(
             config_path="test.json",
             output_dir="different",
             request_timeout=30
         )
-        
+
         assert config1 == config2
         assert config1 != config3
 
@@ -197,7 +197,7 @@ class TestPipelineConfig:
             config_path="test.json",
             api_endpoint="https://api.test.com"
         )
-        
+
         config_str = str(config)
         assert "config_path='test.json'" in config_str
         assert "api_endpoint='https://api.test.com'" in config_str

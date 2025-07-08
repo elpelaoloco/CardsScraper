@@ -7,7 +7,7 @@ from src.core.category import Category
 
 
 class TestElReinoScraper:
-    
+
     @pytest.fixture
     def scraper_config(self):
         return {
@@ -23,11 +23,11 @@ class TestElReinoScraper:
             },
             'batch_size': 5
         }
-    
+
     @pytest.fixture
     def scraper(self, scraper_config):
         return ElReinoScraper('el_reino', scraper_config)
-    
+
     @pytest.fixture
     def pokemon_category(self):
         return Category(
@@ -39,7 +39,7 @@ class TestElReinoScraper:
                 'price_selector': 'ins span.woocommerce-Price-amount'
             }
         )
-    
+
     @pytest.fixture
     def sample_category_soup(self):
         html = '''
@@ -55,7 +55,7 @@ class TestElReinoScraper:
         </html>
         '''
         return BeautifulSoup(html, 'html.parser')
-    
+
     @patch('src.scrapers.el_reino.ElReinoScraper.find_elements')
     @patch('src.scrapers.el_reino.ElReinoScraper.get_text')
     @patch('src.scrapers.el_reino.ElReinoScraper.get_attribute')
@@ -64,27 +64,111 @@ class TestElReinoScraper:
         mock_find_elements.return_value = mock_elements
         mock_get_text.side_effect = ['Pokemon Booster Pack', 'Pokemon Theme Deck']
         mock_get_attr.side_effect = ['/producto/pokemon-booster-pack', '/producto/pokemon-theme-deck']
-        
+
         result = scraper.extract_product_urls(sample_category_soup, pokemon_category)
-        
+
         assert len(result) == 2
         assert result[0] == ('Pokemon Booster Pack', 'https://elreinodelosduelos.cl/producto/pokemon-booster-pack')
         assert result[1] == ('Pokemon Theme Deck', 'https://elreinodelosduelos.cl/producto/pokemon-theme-deck')
-    
+
     @patch('src.scrapers.el_reino.ElReinoScraper.get_page')
     def test_process_product(self, mock_get_page, scraper, pokemon_category):
         mock_soup = BeautifulSoup('<html><body>Test</body></html>', 'html.parser')
         mock_get_page.return_value = mock_soup
-        
+
         result = scraper.process_product('https://test.com/product', pokemon_category)
-        
+
         assert result is not None
         assert isinstance(result, dict)
-    
+
     @patch('src.scrapers.el_reino.ElReinoScraper.get_page')
     def test_process_product_page_error(self, mock_get_page, scraper, pokemon_category):
         mock_get_page.side_effect = Exception('Page load error')
-        
+
         result = scraper.process_product('https://test.com/product', pokemon_category)
-        
+
         assert result == {}
+
+    def test_extract_price_single_element(self, scraper):
+        html = '''
+        <html>
+            <body>
+                <p class="price"><span>$1,500.00</span></p>
+            </body>
+        </html>
+        '''
+        soup = BeautifulSoup(html, 'html.parser')
+
+        result = scraper.extract_price(soup)
+
+        assert result == "1,500.00"
+
+    def test_extract_price_multiple_elements(self, scraper):
+        html = '''
+        <html>
+            <body>
+                <p class="price">
+                    <span>$1,200</span>
+                    <span>$1,500</span>
+                </p>
+            </body>
+        </html>
+        '''
+        soup = BeautifulSoup(html, 'html.parser')
+
+        result = scraper.extract_price(soup)
+
+        assert result == "1,200"
+
+    def test_extract_price_multiple_elements_with_actual(self, scraper):
+        html = '''
+        <html>
+            <body>
+                <p class="price">
+                    <span>$1,200</span>
+                    <span>Precio actual: $1,500</span>
+                </p>
+            </body>
+        </html>
+        '''
+        soup = BeautifulSoup(html, 'html.parser')
+
+        result = scraper.extract_price(soup)
+
+        assert result == "1,500"
+
+    def test_extract_price_no_elements(self, scraper):
+        html = '<html><body><div>No price here</div></body></html>'
+        soup = BeautifulSoup(html, 'html.parser')
+
+        result = scraper.extract_price(soup)
+
+        assert result == ""
+
+    def test_extract_price_no_numeric_content(self, scraper):
+        html = '''
+        <html>
+            <body>
+                <p class="price"><span>No price available</span></p>
+            </body>
+        </html>
+        '''
+        soup = BeautifulSoup(html, 'html.parser')
+
+        result = scraper.extract_price(soup)
+
+        assert result == ""
+
+    def test_extract_price_complex_format(self, scraper):
+        html = '''
+        <html>
+            <body>
+                <p class="price"><span>Price: $2,499.99 (Tax included)</span></p>
+            </body>
+        </html>
+        '''
+        soup = BeautifulSoup(html, 'html.parser')
+
+        result = scraper.extract_price(soup)
+
+        assert result == "2,499.99"
