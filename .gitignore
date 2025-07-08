@@ -19,3 +19,5 @@ reports/**
 .env
 venv
 venv/
+
+CLAUDE.md

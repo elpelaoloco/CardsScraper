@@ -54,11 +54,45 @@ Esto genera un reporte detallado en `test_report.txt` con resultados por test, a
 
 ## 🧪 Testing Avanzado
 
+### Tests por Tienda
 - Los tests específicos para cada tienda aseguran:
   - Que los `selectors` estén definidos correctamente
   - Que las URLs configuradas sean válidas
   - Que los productos estén visibles y accesibles
 - Los errores se agrupan y reportan al final del archivo de reporte para facilitar el debug
+
+### Tests de ScraperManager
+El archivo `tests/unit/test_scraper_manager.py` contiene 20 tests que verifican:
+
+**Inicialización y Configuración:**
+- `test_init_with_json_config`: Inicialización con archivo JSON
+- `test_init_with_yaml_config`: Inicialización con archivo YAML  
+- `test_load_config_file_not_found`: Manejo de archivos inexistentes
+- `test_load_config_invalid_format`: Manejo de formatos no soportados
+- `test_load_config_invalid_json`: Manejo de JSON inválido
+- `test_load_config_scraper_creation_failure`: Manejo de errores en creación de scrapers
+- `test_load_config_no_scrapers_section`: Configuración sin sección scrapers
+
+**Funcionalidad Principal:**
+- `test_get_game_from_category`: Mapeo de categorías a juegos (magic, yugioh, pokemon)
+- `test_run_scraper_success`: Ejecución exitosa de scraper individual
+- `test_run_scraper_not_found`: Manejo de scrapers inexistentes
+- `test_run_all_scrapers`: Ejecución de todos los scrapers
+- `test_run_all_scrapers_empty_config`: Manejo de configuración vacía
+
+**Gestión de Resultados y Reportes:**
+- `test_save_results_per_category`: Guardado de resultados por categoría
+- `test_get_report`: Obtención de reportes
+- `test_make_report`: Generación de reportes finales
+- `test_scraper_lifecycle`: Ciclo completo de scraping
+
+**Integración y Manejo de Errores:**
+- `test_integration_with_scraper_factory`: Integración con ScraperFactory
+- `test_logger_integration`: Integración con sistema de logging
+- `test_error_handling_during_scraper_run`: Manejo de errores durante ejecución
+- `test_config_access_after_loading`: Acceso a configuración tras carga
+
+**MockScraper:** Implementación de prueba que extiende BaseScraper para testing, implementando todos los métodos abstractos necesarios.
 
 ---
 

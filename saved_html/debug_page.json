@@ -1,19 +1,18 @@
 {
   "filename": "debug_page.html",
-  "save_date": "2025-07-07T17:54:10.666704",
-  "file_size_bytes": 155190,
-  "file_size_kb": 151.55,
-  "content_length": 154964,
+  "save_date": "2025-07-08T03:25:50.776169",
+  "file_size_bytes": 224897,
+  "file_size_kb": 219.63,
+  "content_length": 224631,
   "prettified": true,
   "status": "success",
-  "title": "Pokémon Trading Card Game | Third Impact",
-  "meta_description": "Pokémon Trading Card Game",
+  "title": "Booster Box: Yu-Gi-Oh! Valiant Smashers - El Reino de los Duelos",
   "stats": {
-    "links": 80,
-    "images": 17,
-    "paragraphs": 2,
-    "divs": 148,
-    "scripts": 20,
-    "stylesheets": 24
+    "links": 159,
+    "images": 21,
+    "paragraphs": 37,
+    "divs": 312,
+    "scripts": 98,
+    "stylesheets": 76
   }
 }
